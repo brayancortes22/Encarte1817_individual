@@ -9,7 +9,8 @@ namespace Entity.Model
 {
     public class Employee : Base.BaseEntity
     {
-
+        public int PersonId { get; set; } // Relación con Person
+        public int UserId { get; set; } // Relación con User
         public string Position { get; set; }
         public string Department { get; set; }
         public DateTime HiringDate { get; set; } //fecha de contratación

@@ -99,7 +99,8 @@ namespace Entity.Context
             modelBuilder.Entity<ModulePermission>()
                 .HasOne(mp => mp.Permission)
                 .WithMany()
-                .HasForeignKey(mp => mp.PermissionId);
+                .HasForeignKey(mp => mp.PermissionId)
+                .OnDelete(DeleteBehavior.NoAction);  // Cambiar a NoAction para evitar ciclos de cascada
 
             // Configuración de Menu-Permission
             modelBuilder.Entity<MenuPermission>()
@@ -110,7 +111,8 @@ namespace Entity.Context
             modelBuilder.Entity<MenuPermission>()
                 .HasOne(mp => mp.Permission)
                 .WithMany()
-                .HasForeignKey(mp => mp.PermissionId);
+                .HasForeignKey(mp => mp.PermissionId)
+                .OnDelete(DeleteBehavior.NoAction);  // Cambiar a NoAction
 
             // Configuración jerárquica para Menu (relación recursiva)
             modelBuilder.Entity<Menu>()
@@ -155,7 +157,7 @@ namespace Entity.Context
                     .IsRequired(false);
 
                 modelBuilder.Entity(entityType.ClrType)
-                    .Property("DeleteAt")
+                    .Property("DeletedAt")
                     .IsRequired(false);
 
                 // Configurar Status con un valor predeterminado de true
@@ -163,6 +165,26 @@ namespace Entity.Context
                     .Property("Status")
                     .HasDefaultValue(true);
             }
+
+            // Configuración para Employee
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Person)
+                .WithMany()
+                .HasForeignKey(e => e.PersonId);
+                // Mantenemos ON DELETE CASCADE
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction); // Cambiamos a NO ACTION para evitar ciclos
+
+            // Configuración para User-Person (uno a uno)
+            modelBuilder.Entity<User>()
+                .HasOne<Person>() // Un usuario tiene una persona
+                .WithOne(p => p.User) // Una persona tiene un usuario
+                .HasForeignKey<User>(u => u.PersonId) // La clave foránea está en User
+                .OnDelete(DeleteBehavior.NoAction); // Usar NoAction para evitar ciclos de cascada
         }
 
         
