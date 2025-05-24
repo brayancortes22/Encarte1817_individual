@@ -23,8 +23,6 @@ namespace Entity.Dtos.Security.ChangeLog
         public string NewValues { get; set; }
         public string IpAddress { get; set; }
         public string UserAgent { get; set; }
-        
-        // Propiedades adicionales para mostrar información relacionada
         public string UserEmail { get; set; }
         public string UserName { get; set; }
     }
