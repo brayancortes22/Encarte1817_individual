@@ -16,7 +16,6 @@ namespace Entity.Model
         public int Order { get; set; }
 
         // Relaciones
-        public Module Module { get; set; }
         public ICollection<RolFormPermission> RolFormPermissions { get; set; }
         
     }
