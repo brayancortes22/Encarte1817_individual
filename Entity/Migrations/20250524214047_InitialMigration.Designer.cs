@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524212642_InitialMigration")]
+    [Migration("20250524214047_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -826,9 +826,6 @@ namespace Entity.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
@@ -838,8 +835,6 @@ namespace Entity.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("DistrictId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Persons");
                 });
@@ -1027,6 +1022,9 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1036,6 +1034,9 @@ namespace Entity.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PersonId")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -1102,7 +1103,7 @@ namespace Entity.Migrations
                     b.HasOne("Entity.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Person");
@@ -1236,12 +1237,6 @@ namespace Entity.Migrations
                         .WithMany()
                         .HasForeignKey("DistrictId");
 
-                    b.HasOne("Entity.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("City");
 
                     b.Navigation("Country");
@@ -1249,8 +1244,6 @@ namespace Entity.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("District");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Entity.Model.Provider", b =>
@@ -1310,6 +1303,15 @@ namespace Entity.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Entity.Model.User", b =>
+                {
+                    b.HasOne("Entity.Model.Person", null)
+                        .WithOne("User")
+                        .HasForeignKey("Entity.Model.User", "PersonId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Entity.Model.City", b =>
                 {
                     b.Navigation("Districts");
@@ -1349,6 +1351,12 @@ namespace Entity.Migrations
             modelBuilder.Entity("Entity.Model.Permission", b =>
                 {
                     b.Navigation("RolFormPermissions");
+                });
+
+            modelBuilder.Entity("Entity.Model.Person", b =>
+                {
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Entity.Model.Rol", b =>
