@@ -14,7 +14,8 @@ namespace Entity.Dtos.OtherDatesPerson.Client
     public class UpdateClientDto : BaseDto
     {
         public string ClientCode { get; set; }
-        public DateTime RegistrationDate { get; set; }        public string ClientType { get; set; }
+        public DateTime RegistrationDate { get; set; }   
+        public string ClientType { get; set; }
         public int PersonId { get; set; }
     }
 }
