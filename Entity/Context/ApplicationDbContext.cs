@@ -20,16 +20,35 @@ namespace Entity.Context
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;
-        }
-
-        //Dbset SETS
+        }        //Dbset SETS - Security
         public DbSet<User> Users { get; set; }
         public DbSet<Rol> Roles { get; set; }
         public DbSet<RolUser> RolUsers { get; set; }
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<Form> Forms { get; set; }
+        public DbSet<Module> Modules { get; set; }
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<FormModule> FormModules { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolFormPermission> RolFormPermissions { get; set; }
+        public DbSet<ModulePermission> ModulePermissions { get; set; }
+        public DbSet<MenuPermission> MenuPermissions { get; set; }
+        public DbSet<ChangeLog> ChangeLogs { get; set; }
 
+        //Dbset SETS - OtherDatesPerson
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<District> Districts { get; set; }
+        public DbSet<CodePostal> CodePostals { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Provider> Providers { get; set; }
+        
+        // Relaciones
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configuración de la relación muchos-a-muchos
+            // Configuración de la relación User-Rol (muchos-a-muchos)
             modelBuilder.Entity<RolUser>()
                 .HasKey(ru => new { ru.UserId, ru.RolId }); // Clave compuesta
 
@@ -42,7 +61,84 @@ namespace Entity.Context
                 .HasOne(ru => ru.Rol)
                 .WithMany(r => r.RolUsers)
                 .HasForeignKey(ru => ru.RolId);
-                
+
+            // Configuración de la relación Rol-Form-Permission (muchos-a-muchos ternaria)
+            modelBuilder.Entity<RolFormPermission>()
+                .HasOne(rfp => rfp.Rol)
+                .WithMany(r => r.RolFormPermissions)
+                .HasForeignKey(rfp => rfp.RolId);
+
+            modelBuilder.Entity<RolFormPermission>()
+                .HasOne(rfp => rfp.Form)
+                .WithMany(f => f.RolFormPermissions)
+                .HasForeignKey(rfp => rfp.FormId);
+
+            modelBuilder.Entity<RolFormPermission>()
+                .HasOne(rfp => rfp.Permission)
+                .WithMany(p => p.RolFormPermissions)
+                .HasForeignKey(rfp => rfp.PermissionId);
+
+            // Configuración de Form-Module
+            modelBuilder.Entity<FormModule>()
+                .HasOne(fm => fm.Form)
+                .WithMany()
+                .HasForeignKey(fm => fm.FormId);
+
+            modelBuilder.Entity<FormModule>()
+                .HasOne(fm => fm.Module)
+                .WithMany()
+                .HasForeignKey(fm => fm.ModuleId);
+
+            // Configuración de Module-Permission
+            modelBuilder.Entity<ModulePermission>()
+                .HasOne(mp => mp.Module)
+                .WithMany(m => m.ModulePermissions)
+                .HasForeignKey(mp => mp.ModuleId);
+
+            modelBuilder.Entity<ModulePermission>()
+                .HasOne(mp => mp.Permission)
+                .WithMany()
+                .HasForeignKey(mp => mp.PermissionId);
+
+            // Configuración de Menu-Permission
+            modelBuilder.Entity<MenuPermission>()
+                .HasOne(mp => mp.Menu)
+                .WithMany()
+                .HasForeignKey(mp => mp.MenuId);
+
+            modelBuilder.Entity<MenuPermission>()
+                .HasOne(mp => mp.Permission)
+                .WithMany()
+                .HasForeignKey(mp => mp.PermissionId);
+
+            // Configuración jerárquica para Menu (relación recursiva)
+            modelBuilder.Entity<Menu>()
+                .HasOne(m => m.ParentMenu)
+                .WithMany()
+                .HasForeignKey(m => m.ParentMenuId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuración para Module
+            modelBuilder.Entity<Module>()
+                .HasOne(m => m.ParentModule)
+                .WithMany()
+                .HasForeignKey(m => m.ParentModuleId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configuración para City-Department
+            modelBuilder.Entity<City>()
+                .HasOne(c => c.Department)
+                .WithMany(d => d.Cities)
+                .HasForeignKey("DepartmentId");
+
+            // Configuración para Department-Country
+            modelBuilder.Entity<Department>()
+                .HasOne(d => d.Country)
+                .WithMany(c => c.Departments)
+                .HasForeignKey("CountryId");
+
             // Configuración para todas las entidades que heredan de BaseEntity
             foreach (var entityType in modelBuilder.Model.GetEntityTypes()
                 .Where(t => t.ClrType.IsSubclassOf(typeof(BaseEntity))))
@@ -51,16 +147,16 @@ namespace Entity.Context
                 modelBuilder.Entity(entityType.ClrType)
                     .Property("CreatedAt")
                     .IsRequired();
-                    
+
                 // Configurar UpdatedAt y DeleteAt como nullable
                 modelBuilder.Entity(entityType.ClrType)
                     .Property("UpdatedAt")
                     .IsRequired(false);
-                    
+
                 modelBuilder.Entity(entityType.ClrType)
                     .Property("DeleteAt")
                     .IsRequired(false);
-                    
+
                 // Configurar Status con un valor predeterminado de true
                 modelBuilder.Entity(entityType.ClrType)
                     .Property("Status")
@@ -247,7 +343,7 @@ namespace Entity.Context
                         case EntityState.Deleted:
                             // Convertimos el borrado en un borrado lógico
                             entry.State = EntityState.Modified;
-                            entity.DeleteAt = currentDateTime;
+                            entity.DeletedAt = currentDateTime;
                             entity.Status = false;
                             break;
                     }
