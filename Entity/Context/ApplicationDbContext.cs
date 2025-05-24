@@ -20,7 +20,8 @@ namespace Entity.Context
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;
-        }        //Dbset SETS - Security
+        }
+        //Dbset SETS - Security
         public DbSet<User> Users { get; set; }
         public DbSet<Rol> Roles { get; set; }
         public DbSet<RolUser> RolUsers { get; set; }
