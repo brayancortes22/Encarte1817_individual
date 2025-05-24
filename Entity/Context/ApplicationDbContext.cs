@@ -155,7 +155,7 @@ namespace Entity.Context
                     .IsRequired(false);
 
                 modelBuilder.Entity(entityType.ClrType)
-                    .Property("DeleteAt")
+                    .Property("DeletedAt")
                     .IsRequired(false);
 
                 // Configurar Status con un valor predeterminado de true

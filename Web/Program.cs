@@ -23,11 +23,6 @@ using Data.Implements.BaseData;
 
 
 
-
-
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add controllers
