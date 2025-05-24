@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entity.Enums;
+using Entity.Model.Base;
+
 
 namespace Entity.Model
 {
-    public class District : Base.BaseEntity
+    public class District : BaseEntity
     {
         public string DistrictName { get; set; }
         public StreetType StreetType { get; set; }  // Calle, Carrera, etc.
