@@ -12,7 +12,7 @@ namespace Entity.Model
         public int MenuId { get; set; }
         public int PermissionId { get; set; }
         
-        // Relaciones
+        // Propiedades de navegación correctamente definidas
         public Menu Menu { get; set; }
         public Permission Permission { get; set; }
     }

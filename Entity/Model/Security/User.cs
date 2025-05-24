@@ -11,6 +11,9 @@ namespace Entity.Model
     {
         public  string Email { get; set; }
         public  string Password { get; set; }
-        public  IEnumerable<RolUser> RolUsers { get; set; }
+        
+        //relación con Person
+        public int PersonId { get; set; }
+        public IEnumerable<RolUser> RolUsers { get; set; }
     }
 }
