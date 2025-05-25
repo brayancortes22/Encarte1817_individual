@@ -8,6 +8,11 @@ using Data.Interfaces;
 using Data.Implements.RolData;
 using Data.Implements.RolUserData;
 using Data.Implements.UserDate;
+using Data.Implements.FormData;
+using Data.Implements.FormModuleData;
+using Data.Implements.RolFormPermissionData;
+using Data.Implements.MenuPermissionData;
+using Data.Implements.ModulePermissionData;
 using Business.Interfaces;
 using Business.Implements;
 using Utilities.Interfaces;
@@ -71,6 +76,26 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 // Register RoleUser-specific services
 builder.Services.AddScoped<IRolUserData, RolUserData>();
 builder.Services.AddScoped<IRoleUserBusiness, RoleUserBusiness>();
+
+// Register Form services
+builder.Services.AddScoped<IFormData, FormData>();
+builder.Services.AddScoped<IFormBusiness, FormBusiness>();
+
+// Register Form-Module relationship services
+builder.Services.AddScoped<IFormModuleData, FormModuleData>();
+builder.Services.AddScoped<IFormModuleBusiness, FormModuleBusiness>();
+
+// Register RolFormPermission services
+builder.Services.AddScoped<IRolFormPermissionData, RolFormPermissionData>();
+builder.Services.AddScoped<IRolFormPermissionBusiness, RolFormPermissionBusiness>();
+
+// Register MenuPermission services
+builder.Services.AddScoped<IMenuPermissionData, MenuPermissionData>();
+builder.Services.AddScoped<IMenuPermissionBusiness, MenuPermissionBusiness>();
+
+// Register ModulePermission services
+builder.Services.AddScoped<IModulePermissionData, ModulePermissionData>();
+builder.Services.AddScoped<IModulePermissionBusiness, ModulePermissionBusiness>();
 
 // Register utility helpers
 builder.Services.AddScoped<IGenericIHelpers, GenericHelpers>();
