@@ -27,13 +27,19 @@ namespace Data.Implements.RolData
 
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        public async Task<bool> UpdatePartial(Rol rol)
+        }        public async Task<bool> UpdatePartial(Rol rol)
         {
-            var existingRol = await _context.Roles.FindAsync(rol.Id);
+            var existingRol = await _context.Set<Rol>().FindAsync(rol.Id);
             if (existingRol == null) return false;
-            _context.Roles.Update(existingRol);
+            
+            // Actualizar solo los campos necesarios
+            if (rol.Name != null)
+                existingRol.Name = rol.Name;
+                
+            if (rol.Description != null)
+                existingRol.Description = rol.Description;
+            
+            _context.Set<Rol>().Update(existingRol);
             await _context.SaveChangesAsync();
             return true;
         }
