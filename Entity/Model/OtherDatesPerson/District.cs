@@ -20,6 +20,10 @@ namespace Entity.Model
         public string TertiaryNumber { get; set; }  // 2
         public string AdditionalNumber { get; set; } // 100
         public StreetLetter AdditionalLetter { get; set; } // B
+        public int DistrictId { get; set; } // Barrio
 
+        // Relaciones
+        public int CityId { get; set; }
+        public City City { get; set; }
     }
 }

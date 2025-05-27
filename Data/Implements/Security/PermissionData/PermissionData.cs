@@ -33,7 +33,6 @@ namespace Data.Implements.PermissionData
         {
             return await _context.Set<Permission>()
                 .Where(p => p.Status == true)
-                .Include(p => p.Module)
                 .ToListAsync();
         }
 
@@ -41,7 +40,6 @@ namespace Data.Implements.PermissionData
         {
             return await _context.Set<Permission>()
                 .Where(p => p.Status == true && (int)p.Type == permissionTypeId)
-                .Include(p => p.Module)
                 .ToListAsync();
         }
 

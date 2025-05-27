@@ -21,6 +21,6 @@ namespace Entity.Dtos.Security.Permission
         public string PermissionCode { get; set; }
         public PermissionType Type { get; set; }
         
-        public int? ModuleId { get; set; }
+        public int ModuleId { get; set; }
     }
 }

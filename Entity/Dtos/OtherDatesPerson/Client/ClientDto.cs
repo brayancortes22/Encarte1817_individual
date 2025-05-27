@@ -18,10 +18,5 @@ namespace Entity.Dtos.OtherDatesPerson.Client
         public string ClientType { get; set; }
         public int PersonId { get; set; }
         
-        // Propiedades adicionales para mostrar información relacionada
-        public string Name { get; set; }
-        public string IdentificationNumber { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
     }
 }

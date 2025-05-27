@@ -11,10 +11,10 @@ namespace Entity.Model
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public IEnumerable<RolUser> RolUsers { get; set; }
 
         // propiedades de navegación
-        public IEnumerable<RolFormPermission> RolFormPermissions { get; set; }
+        public ICollection<RolUser> RolUsers { get; set; }
+        public ICollection<RolFormPermission> RolFormPermissions { get; set; }
 
     }
 }

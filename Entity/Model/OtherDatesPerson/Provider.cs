@@ -15,6 +15,7 @@ namespace Entity.Model
         public string ServiceType { get; set; }
 
         // Relación con Person
-        public Person Person { get; set; }
+        public int PersonId { get; set; } // ID de la persona asociada al proveedor
+        public Person person { get; set; }
     }
 }

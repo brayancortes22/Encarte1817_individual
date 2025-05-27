@@ -22,6 +22,5 @@ namespace Entity.Dtos.Security.Module
         public string Url { get; set; }
         public int Order { get; set; }
         
-        public int? ParentModuleId { get; set; }
     }
 }

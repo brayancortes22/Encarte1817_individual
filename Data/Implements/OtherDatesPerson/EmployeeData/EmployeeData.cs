@@ -32,16 +32,16 @@ namespace Data.Implements.EmployeeData
         public async Task<Employee> GetByDocumentNumberAsync(string documentNumber)
         {
             return await _context.Set<Employee>()
-                .Include(e => e.Person)                .Include(e => e.User)
-                .FirstOrDefaultAsync(e => e.Person.IdentificationNumber == documentNumber && e.Status == true);
+                .Include(e => e.person)                
+                .FirstOrDefaultAsync(e => e.person.IdentificationNumber == documentNumber && e.Status == true);
         }
 
         public async Task<List<Employee>> GetActiveAsync()
         {
             return await _context.Set<Employee>()
                 .Where(e => e.Status == true)
-                .Include(e => e.Person)
-                .Include(e => e.User)
+                .Include(e => e.person)
+                
                 .ToListAsync();
         }
 
@@ -49,19 +49,19 @@ namespace Data.Implements.EmployeeData
         {
             return await _context.Set<Employee>()
                 .Where(e => e.Status == true && (int)e.ContractType == contractTypeId)
-                .Include(e => e.Person)
-                .Include(e => e.User)
+                .Include(e => e.person)
+               
                 .ToListAsync();
         }
 
         public async Task<List<Employee>> SearchEmployeesByNameAsync(string name)
         {
             return await _context.Set<Employee>()
-                .Include(e => e.Person)
-                .Include(e => e.User)                .Where(e => e.Status == true && 
-                      (e.Person.Name.Contains(name) || 
-                       e.Person.FirstName.Contains(name) || 
-                       e.Person.LastName.Contains(name)))
+                .Include(e => e.person)
+                .Where(e => e.Status == true && 
+                      (e.person.Name.Contains(name) || 
+                       e.person.FirstName.Contains(name) || 
+                       e.person.LastName.Contains(name)))
                 .ToListAsync();
         }
 

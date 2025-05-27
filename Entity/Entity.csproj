@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="DDL\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Model\Base\" />
   </ItemGroup>
 

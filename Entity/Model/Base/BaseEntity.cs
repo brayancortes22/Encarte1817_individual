@@ -5,12 +5,9 @@ namespace Entity.Model.Base
     public abstract class BaseEntity
     {
         public int Id { get; set; }
-        public bool Status { get; set; }
+        public bool Status { get; set; } = true;
         
-        // Campos de auditoría
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
-
+        // Solo mantenemos el estado activo/inactivo en la entidad principal
+        // El resto de información de auditoría irá solo en la base de logs
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Entity.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524214047_InitialMigration")]
+    [Migration("20250527203728_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -24,68 +24,6 @@ namespace Entity.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Entity.Model.ChangeLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EntityId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NewValues")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OldValues")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserAgent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ChangeLogs");
-                });
 
             modelBuilder.Entity("Entity.Model.City", b =>
                 {
@@ -103,13 +41,13 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("CodePostal")
+                        .HasColumnType("int");
 
                     b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DepartmentId1")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -117,12 +55,11 @@ namespace Entity.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DepartmentId1");
 
                     b.ToTable("Cities");
                 });
@@ -143,12 +80,6 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
@@ -160,54 +91,11 @@ namespace Entity.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PersonId");
 
                     b.ToTable("Clients");
-                });
-
-            modelBuilder.Entity("Entity.Model.CodePostal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("area")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("cityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("postalCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("cityId");
-
-                    b.ToTable("CodePostals");
                 });
 
             modelBuilder.Entity("Entity.Model.Country", b =>
@@ -226,15 +114,9 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("PhonePrefix")
                         .IsRequired()
@@ -244,9 +126,6 @@ namespace Entity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -264,11 +143,8 @@ namespace Entity.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("CountryId1")
+                        .HasColumnType("int");
 
                     b.Property<string>("DepartmentCode")
                         .IsRequired()
@@ -283,12 +159,11 @@ namespace Entity.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CountryId");
+
+                    b.HasIndex("CountryId1");
 
                     b.ToTable("Departments");
                 });
@@ -308,14 +183,14 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CityId")
+                    b.Property<int>("CityId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<int?>("CityId1")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("DistrictId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DistrictName")
                         .IsRequired()
@@ -347,12 +222,11 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
+
+                    b.HasIndex("CityId1");
 
                     b.ToTable("Districts");
                 });
@@ -367,12 +241,6 @@ namespace Entity.Migrations
 
                     b.Property<int>("ContractType")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Department")
                         .IsRequired()
@@ -401,12 +269,6 @@ namespace Entity.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("WorkEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -414,8 +276,6 @@ namespace Entity.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
                 });
@@ -427,12 +287,6 @@ namespace Entity.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -452,9 +306,6 @@ namespace Entity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -473,136 +324,34 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("FormId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("FormId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("ModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModuleId1")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FormId");
 
+                    b.HasIndex("FormId1");
+
                     b.HasIndex("ModuleId");
+
+                    b.HasIndex("ModuleId1");
 
                     b.ToTable("FormModules");
-                });
-
-            modelBuilder.Entity("Entity.Model.Menu", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Icon")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MenuId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ParentMenuId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MenuId");
-
-                    b.HasIndex("ModuleId");
-
-                    b.HasIndex("ParentMenuId");
-
-                    b.ToTable("Menus");
-                });
-
-            modelBuilder.Entity("Entity.Model.MenuPermission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MenuId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MenuId1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MenuId");
-
-                    b.HasIndex("MenuId1");
-
-                    b.HasIndex("PermissionId");
-
-                    b.ToTable("MenuPermissions");
                 });
 
             modelBuilder.Entity("Entity.Model.Module", b =>
@@ -613,12 +362,6 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -627,9 +370,6 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ModuleId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -637,26 +377,16 @@ namespace Entity.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ParentModuleId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ModuleId");
-
-                    b.HasIndex("ParentModuleId");
 
                     b.ToTable("Modules");
                 });
@@ -669,16 +399,13 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("ModuleId")
                         .HasColumnType("int");
 
                     b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PermissionId1")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -686,14 +413,13 @@ namespace Entity.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ModuleId");
 
                     b.HasIndex("PermissionId");
+
+                    b.HasIndex("PermissionId1");
 
                     b.ToTable("ModulePermissions");
                 });
@@ -706,18 +432,9 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ModuleId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -735,12 +452,7 @@ namespace Entity.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ModuleId");
 
                     b.ToTable("Permissions");
                 });
@@ -765,12 +477,6 @@ namespace Entity.Migrations
 
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
@@ -823,9 +529,6 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
@@ -859,12 +562,6 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
@@ -881,9 +578,6 @@ namespace Entity.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PersonId");
@@ -899,12 +593,6 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -917,9 +605,6 @@ namespace Entity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -934,12 +619,6 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("FormId")
                         .HasColumnType("int");
 
@@ -953,9 +632,6 @@ namespace Entity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -976,12 +652,6 @@ namespace Entity.Migrations
                     b.Property<int>("RolId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
@@ -989,9 +659,6 @@ namespace Entity.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("UserId", "RolId");
 
@@ -1008,12 +675,6 @@ namespace Entity.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1025,18 +686,20 @@ namespace Entity.Migrations
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PersonId1")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PersonId")
                         .IsUnique();
+
+                    b.HasIndex("PersonId1");
 
                     b.ToTable("Users");
                 });
@@ -1044,10 +707,14 @@ namespace Entity.Migrations
             modelBuilder.Entity("Entity.Model.City", b =>
                 {
                     b.HasOne("Entity.Model.Department", "Department")
-                        .WithMany("Cities")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Entity.Model.Department", null)
+                        .WithMany("Cities")
+                        .HasForeignKey("DepartmentId1");
 
                     b.Navigation("Department");
                 });
@@ -1063,52 +730,45 @@ namespace Entity.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("Entity.Model.CodePostal", b =>
-                {
-                    b.HasOne("Entity.Model.City", "city")
-                        .WithMany("PostalCodes")
-                        .HasForeignKey("cityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("city");
-                });
-
             modelBuilder.Entity("Entity.Model.Department", b =>
                 {
                     b.HasOne("Entity.Model.Country", "Country")
-                        .WithMany("Departments")
+                        .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Entity.Model.Country", null)
+                        .WithMany("Departments")
+                        .HasForeignKey("CountryId1");
 
                     b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Entity.Model.District", b =>
                 {
+                    b.HasOne("Entity.Model.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Entity.Model.City", null)
                         .WithMany("Districts")
-                        .HasForeignKey("CityId");
+                        .HasForeignKey("CityId1");
+
+                    b.Navigation("City");
                 });
 
             modelBuilder.Entity("Entity.Model.Employee", b =>
                 {
-                    b.HasOne("Entity.Model.Person", "Person")
+                    b.HasOne("Entity.Model.Person", "person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Entity.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Person");
-
-                    b.Navigation("User");
+                    b.Navigation("person");
                 });
 
             modelBuilder.Entity("Entity.Model.FormModule", b =>
@@ -1119,74 +779,23 @@ namespace Entity.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Entity.Model.Form", null)
+                        .WithMany("FormModules")
+                        .HasForeignKey("FormId1");
+
                     b.HasOne("Entity.Model.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Entity.Model.Module", null)
+                        .WithMany("FormModules")
+                        .HasForeignKey("ModuleId1");
 
                     b.Navigation("Form");
 
                     b.Navigation("Module");
-                });
-
-            modelBuilder.Entity("Entity.Model.Menu", b =>
-                {
-                    b.HasOne("Entity.Model.Menu", null)
-                        .WithMany("ChildMenus")
-                        .HasForeignKey("MenuId");
-
-                    b.HasOne("Entity.Model.Module", "Module")
-                        .WithMany()
-                        .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entity.Model.Menu", "ParentMenu")
-                        .WithMany()
-                        .HasForeignKey("ParentMenuId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Module");
-
-                    b.Navigation("ParentMenu");
-                });
-
-            modelBuilder.Entity("Entity.Model.MenuPermission", b =>
-                {
-                    b.HasOne("Entity.Model.Menu", "Menu")
-                        .WithMany()
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entity.Model.Menu", null)
-                        .WithMany("MenuPermissions")
-                        .HasForeignKey("MenuId1");
-
-                    b.HasOne("Entity.Model.Permission", "Permission")
-                        .WithMany()
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Menu");
-
-                    b.Navigation("Permission");
-                });
-
-            modelBuilder.Entity("Entity.Model.Module", b =>
-                {
-                    b.HasOne("Entity.Model.Module", null)
-                        .WithMany("ChildModules")
-                        .HasForeignKey("ModuleId");
-
-                    b.HasOne("Entity.Model.Module", "ParentModule")
-                        .WithMany()
-                        .HasForeignKey("ParentModuleId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentModule");
                 });
 
             modelBuilder.Entity("Entity.Model.ModulePermission", b =>
@@ -1203,20 +812,13 @@ namespace Entity.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Entity.Model.Permission", null)
+                        .WithMany("ModulePermissions")
+                        .HasForeignKey("PermissionId1");
+
                     b.Navigation("Module");
 
                     b.Navigation("Permission");
-                });
-
-            modelBuilder.Entity("Entity.Model.Permission", b =>
-                {
-                    b.HasOne("Entity.Model.Module", "Module")
-                        .WithMany()
-                        .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Module");
                 });
 
             modelBuilder.Entity("Entity.Model.Person", b =>
@@ -1248,13 +850,13 @@ namespace Entity.Migrations
 
             modelBuilder.Entity("Entity.Model.Provider", b =>
                 {
-                    b.HasOne("Entity.Model.Person", "Person")
+                    b.HasOne("Entity.Model.Person", "person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Person");
+                    b.Navigation("person");
                 });
 
             modelBuilder.Entity("Entity.Model.RolFormPermission", b =>
@@ -1310,13 +912,19 @@ namespace Entity.Migrations
                         .HasForeignKey("Entity.Model.User", "PersonId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("Entity.Model.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("Entity.Model.City", b =>
                 {
                     b.Navigation("Districts");
-
-                    b.Navigation("PostalCodes");
                 });
 
             modelBuilder.Entity("Entity.Model.Country", b =>
@@ -1331,25 +939,22 @@ namespace Entity.Migrations
 
             modelBuilder.Entity("Entity.Model.Form", b =>
                 {
+                    b.Navigation("FormModules");
+
                     b.Navigation("RolFormPermissions");
-                });
-
-            modelBuilder.Entity("Entity.Model.Menu", b =>
-                {
-                    b.Navigation("ChildMenus");
-
-                    b.Navigation("MenuPermissions");
                 });
 
             modelBuilder.Entity("Entity.Model.Module", b =>
                 {
-                    b.Navigation("ChildModules");
+                    b.Navigation("FormModules");
 
                     b.Navigation("ModulePermissions");
                 });
 
             modelBuilder.Entity("Entity.Model.Permission", b =>
                 {
+                    b.Navigation("ModulePermissions");
+
                     b.Navigation("RolFormPermissions");
                 });
 

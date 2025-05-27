@@ -7,17 +7,18 @@ using Entity.Model.Base;
 
 namespace Entity.Model
 {
-    public class ChangeLog : BaseEntity
+    public class ChangeLog
     {
-        public int UserId { get; set; }
-        public string Action { get; set; } // Create, Update, Delete
-        public string EntityType { get; set; } // Module, Form, etc.
-        public string EntityName { get; set; } // Name of the entity (e.g., Module, Form)
-        public string EntityId { get; set; }
-        public string OldValues { get; set; }
-        public string NewValues { get; set; }
-        public string IpAddress { get; set; }
-        public string UserAgent { get; set; } 
-        
+        public int Id { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public int IdTable { get; set; }
+        public string TableName { get; set; } = string.Empty;
+        public string OldValues { get; set; } = string.Empty;
+        public string NewValues { get; set; } = string.Empty;
+        public string Action { get; set; } = string.Empty; // Insert, Update, Delete
+        public bool Active { get; set; } = true;
+        public DateTime CreateAt { get; set; } = DateTime.UtcNow;
+        public string EntityName { get; set; } = string.Empty; // Nombre de la clase de la entidad
+        public string IpAddress { get; set; } = string.Empty; // Dirección IP del usuario
     }
 }

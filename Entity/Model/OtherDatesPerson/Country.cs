@@ -14,6 +14,6 @@ namespace Entity.Model
         public string PhonePrefix { get; set; }
 
         // Relación con departamentos/estados
-        public List<Department> Departments { get; set; }
+        public ICollection<Department> Departments { get; set; }
     }
 }

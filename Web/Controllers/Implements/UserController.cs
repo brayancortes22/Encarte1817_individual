@@ -63,43 +63,6 @@ namespace Web.Controllers.Implements
             }
         }
 
-
-
-        //Este metodo responde a patch /users//{id}/status
-        [HttpPatch("users/{id}/status")]
-        public async Task<IActionResult> SetUserActive(int id, [FromBody] UserStatusDto dto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
-                // Ahora pasamos el id recibido como parámetro
-                var deleteLogicalUserDto = new DeleteLogicalUserDto
-                {
-                    Id = id,
-                    Status = dto.IsActive
-                };
-
-                var result = await _userBusiness.SetUserActiveAsync(deleteLogicalUserDto);
-                return Ok(new { Success = result });
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError($"Error de validación al cambiar estado de usuario: {ex.Message}");
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al cambiar estado de usuario: {ex.Message}");
-                return StatusCode(500, "Error interno del servidor");
-            }
-        }
-
-
-
-
-           }
-
-
+    }
 
 }
