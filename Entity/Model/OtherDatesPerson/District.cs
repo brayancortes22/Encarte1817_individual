@@ -23,6 +23,7 @@ namespace Entity.Model
         public int DistrictId { get; set; } // Barrio
 
         // Relaciones
+        public int CityId { get; set; }
         public City City { get; set; }
     }
 }

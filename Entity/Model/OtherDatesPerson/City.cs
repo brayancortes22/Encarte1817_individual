@@ -15,6 +15,6 @@ namespace Entity.Model
 
         // Relaciones
         public Department Department { get; set; }
-        public District Districts { get; set; }
+        public ICollection<District> Districts { get; set; }
     }
 }

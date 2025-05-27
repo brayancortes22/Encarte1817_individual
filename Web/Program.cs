@@ -111,7 +111,6 @@ builder.Services.AddScoped<IAuthHeaderHelper, AuthHeaderHelper>();
 builder.Services.AddScoped<IRoleHelper, RoleHelper>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IValidationHelper, ValidationHelper>();
-builder.Services.AddScoped<IChangeLogService, ChangeLogService>();
 builder.Services.AddHttpContextAccessor();
 
 // Configure JWT Authentication
@@ -211,7 +210,7 @@ var origenesPermitidos = builder.Configuration.GetValue<string>("origenesPermiti
 
             // Aplica migraciones para la base de datos de logs
             // Asegúrate de tener migraciones para LogDbContext o usa EnsureCreated en vez de Migrate
-            logDbContext.Database.EnsureCreated();
+            logDbContext.Database.Migrate();
             logger.LogInformation("Base de datos de logs verificada y creada exitosamente.");
         }
         catch (Exception ex)

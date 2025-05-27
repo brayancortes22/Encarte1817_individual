@@ -14,6 +14,6 @@ namespace Entity.Model
 
         // Relaciones
         public Country Country { get; set; }
-        public City Cities { get; set; }
+        public ICollection<City> Cities { get; set; }
     }
 }
