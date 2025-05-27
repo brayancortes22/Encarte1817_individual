@@ -17,6 +17,6 @@ namespace Entity.Model
         // Relaciones
         public ICollection<ModulePermission> ModulePermissions { get; set; }
         public ICollection<FormModule> FormModules { get; set; }
-
+        
     }
 }

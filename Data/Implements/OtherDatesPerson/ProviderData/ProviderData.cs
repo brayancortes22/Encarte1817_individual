@@ -31,27 +31,28 @@ namespace Data.Implements.ProviderData
 
         public async Task<Provider> GetByDocumentNumberAsync(string documentNumber)
         {
-            return await _context.Set<Provider>()                .Include(p => p.Person)
-                .FirstOrDefaultAsync(p => p.Person.IdentificationNumber == documentNumber || p.TaxId == documentNumber);
+            return await _context.Set<Provider>()                
+                .Include(p => p.person)
+                .FirstOrDefaultAsync(p => p.person.IdentificationNumber == documentNumber || p.TaxId == documentNumber);
         }
 
         public async Task<List<Provider>> GetActiveAsync()
         {
             return await _context.Set<Provider>()
                 .Where(p => p.Status == true)
-                .Include(p => p.Person)
+                .Include(p => p.person)
                 .ToListAsync();
         }
 
         public async Task<List<Provider>> SearchProvidersByNameAsync(string name)
         {
             return await _context.Set<Provider>()
-                .Include(p => p.Person)
-                .Where(p => p.Status == true &&                      (p.CompanyName.Contains(name) || 
+                .Include(p => p.person)
+                .Where(p => p.Status == true && (p.CompanyName.Contains(name) || 
                        p.ContactPerson.Contains(name) ||
-                       p.Person.Name.Contains(name) || 
-                       p.Person.FirstName.Contains(name) || 
-                       p.Person.LastName.Contains(name)))
+                       p.person.Name.Contains(name) || 
+                       p.person.FirstName.Contains(name) || 
+                       p.person.LastName.Contains(name)))
                 .ToListAsync();
         }
 

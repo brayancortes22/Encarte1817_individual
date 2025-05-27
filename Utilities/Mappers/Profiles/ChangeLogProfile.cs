@@ -14,11 +14,6 @@ namespace Utilities.Mappers.Profiles
             // Mapeo de ChangeLog a ChangeLogDto y viceversa
             CreateMap<ChangeLog, ChangeLogDto>().ReverseMap();
             
-            // Mapeo para actualización
-            CreateMap<UpdateChangeLogDto, ChangeLog>();
-            
-            // Mapeo para eliminación lógica
-            CreateMap<DeleteLogicalChangeLogDto, ChangeLog>();
         }
     }
 }

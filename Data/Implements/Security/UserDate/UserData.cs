@@ -76,7 +76,6 @@ namespace Data.Implements.UserDate
                 UserId = userId,
                 RolId = rolId,
                 Status = true,
-                CreatedAt = DateTime.UtcNow,
                 User = user,
                 Rol = rol
             };

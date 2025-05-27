@@ -13,7 +13,6 @@ using Data.Implements.UserDate;
 using Data.Implements.FormData;
 using Data.Implements.FormModuleData;
 using Data.Implements.RolFormPermissionData;
-using Data.Implements.MenuPermissionData;
 using Data.Implements.ModulePermissionData;
 using Business.Interfaces;
 using Business.Implements;
@@ -95,9 +94,6 @@ builder.Services.AddScoped<IFormModuleBusiness, FormModuleBusiness>();
 builder.Services.AddScoped<IRolFormPermissionData, RolFormPermissionData>();
 builder.Services.AddScoped<IRolFormPermissionBusiness, RolFormPermissionBusiness>();
 
-// Register MenuPermission services
-builder.Services.AddScoped<IMenuPermissionData, MenuPermissionData>();
-builder.Services.AddScoped<IMenuPermissionBusiness, MenuPermissionBusiness>();
 
 // Register ModulePermission services
 builder.Services.AddScoped<IModulePermissionData, ModulePermissionData>();

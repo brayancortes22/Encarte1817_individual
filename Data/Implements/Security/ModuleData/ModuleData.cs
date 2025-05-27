@@ -33,8 +33,6 @@ namespace Data.Implements.ModuleData
         {
             return await _context.Set<Module>()
                 .Where(m => m.Status == true)
-                .Include(m => m.ParentModule)
-                .Include(m => m.ChildModules.Where(cm => cm.Status == true))
                 .Include(m => m.ModulePermissions)
                 .ToListAsync();
         }
@@ -46,7 +44,6 @@ namespace Data.Implements.ModuleData
                            m.ModulePermissions.Any(mp => 
                                mp.Permission.RolFormPermissions.Any(rfp => 
                                    rfp.Rol.Id == roleId)))
-                .Include(m => m.ParentModule)
                 .Include(m => m.ModulePermissions)
                 .ToListAsync();
         }
@@ -72,15 +69,7 @@ namespace Data.Implements.ModuleData
             // Actualizar valores numéricos si no son cero
             if (module.Order != 0)
                 existingModule.Order = module.Order;
-                
-            // Actualizar ID del módulo padre si es diferente de nulo o cero
-            if (module.ParentModuleId.HasValue && module.ParentModuleId.Value != 0)
-                existingModule.ParentModuleId = module.ParentModuleId;
-                
-            // Si se proporciona un valor nulo para ParentModuleId, establecerlo como nulo
-            if (!module.ParentModuleId.HasValue)
-                existingModule.ParentModuleId = null;
-            
+
             _context.Set<Module>().Update(existingModule);
             await _context.SaveChangesAsync();
             return true;

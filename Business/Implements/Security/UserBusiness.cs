@@ -101,7 +101,7 @@ namespace Business.Implements
             var user = _mapper.Map<User>(dto);
             user.Password = HashPassword(user.Password);
             user.Status = true;
-            user.CreatedAt = DateTime.Now;
+          
 
             var createdUser = await _userData.CreateAsync(user);
             return _mapper.Map<UserDto>(createdUser);
