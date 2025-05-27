@@ -13,6 +13,7 @@ namespace Entity.Model
         public string ClientType { get; set; } // Individual or Corporate
 
         // Relación con Person (podría ser una referencia)
+        public int PersonId { get; set; } // ID de la persona asociada al cliente
         public Person Person { get; set; }
     }
 }

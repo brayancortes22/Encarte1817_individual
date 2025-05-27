@@ -9,8 +9,6 @@ namespace Entity.Model
 {
     public class Employee : Base.BaseEntity
     {
-        public int PersonId { get; set; } // Relación con Person
-        public int UserId { get; set; } // Relación con User
         public string Position { get; set; }
         public string Department { get; set; }
         public DateTime HiringDate { get; set; } //fecha de contratación
@@ -20,7 +18,7 @@ namespace Entity.Model
         public string WorkEmail { get; set; } // correo electrónico de trabajo
 
         // propiedad de navegacion
-        public Person Person { get; set; }
-        public User User { get; set; } // Relación con User
+        public int PersonId { get; set; } // Relación con Person
+        public Person person { get; set; } // Relación con Person
     }
 }

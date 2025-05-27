@@ -10,9 +10,10 @@ namespace Entity.Model
     {
         public string DepartmentName { get; set; }
         public string DepartmentCode { get; set; }
+        public int CountryId { get; set; } // ID del país al que pertenece el departamento
 
         // Relaciones
         public Country Country { get; set; }
-        public List<City> Cities { get; set; }
+        public City Cities { get; set; }
     }
 }

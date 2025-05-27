@@ -10,11 +10,11 @@ namespace Entity.Model
     {
         public string CityName { get; set; }
         public string CityCode { get; set; }
-        
+        public int CodePostal { get; set; }
+        public int DepartmentId { get; set; }
 
         // Relaciones
         public Department Department { get; set; }
-        public List<District> Districts { get; set; }
-        public List<CodePostal> PostalCodes { get; set; }
+        public District Districts { get; set; }
     }
 }

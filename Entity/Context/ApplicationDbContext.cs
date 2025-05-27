@@ -1,25 +1,32 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-
+using Microsoft.AspNetCore.Http; // Agregar esta referencia
 using Entity.Model;
 using Entity.Model.Base;
-
+using Utilities.Helpers; // Agregar esta referencia
 using System.Data;
 using Dapper;
-
 using System.Linq.Expressions;
-
+using System.Text.Json; // Agregar esta referencia
 
 namespace Entity.Context
 {
     public class ApplicationDbContext : DbContext
     {
-
         protected readonly IConfiguration _configuration;
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration configuration) : base(options)
+        private readonly IChangeLogService _changeLogService; // Agregar este servicio
+        private readonly IHttpContextAccessor _httpContextAccessor; // Agregar este servicio
+
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options, 
+            IConfiguration configuration,
+            IChangeLogService changeLogService = null, // Opcional para evitar errores durante las migraciones
+            IHttpContextAccessor httpContextAccessor = null) : base(options)
         {
             _configuration = configuration;
+            _changeLogService = changeLogService;
+            _httpContextAccessor = httpContextAccessor;
         }
         //Dbset SETS - Security
         public DbSet<User> Users { get; set; }
@@ -28,20 +35,17 @@ namespace Entity.Context
         public DbSet<Person> Persons { get; set; }
         public DbSet<Form> Forms { get; set; }
         public DbSet<Module> Modules { get; set; }
-        public DbSet<Menu> Menus { get; set; }
         public DbSet<FormModule> FormModules { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolFormPermission> RolFormPermissions { get; set; }
         public DbSet<ModulePermission> ModulePermissions { get; set; }
-        public DbSet<MenuPermission> MenuPermissions { get; set; }
-        public DbSet<ChangeLog> ChangeLogs { get; set; }
+       
 
         //Dbset SETS - OtherDatesPerson
         public DbSet<Country> Countries { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<District> Districts { get; set; }
-        public DbSet<CodePostal> CodePostals { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Provider> Providers { get; set; }
@@ -102,29 +106,9 @@ namespace Entity.Context
                 .HasForeignKey(mp => mp.PermissionId)
                 .OnDelete(DeleteBehavior.NoAction);  // Cambiar a NoAction para evitar ciclos de cascada
 
-            // Configuración de Menu-Permission
-            modelBuilder.Entity<MenuPermission>()
-                .HasOne(mp => mp.Menu)
-                .WithMany()
-                .HasForeignKey(mp => mp.MenuId);
-
-            modelBuilder.Entity<MenuPermission>()
-                .HasOne(mp => mp.Permission)
-                .WithMany()
-                .HasForeignKey(mp => mp.PermissionId)
-                .OnDelete(DeleteBehavior.NoAction);  // Cambiar a NoAction
-
-            // Configuración jerárquica para Menu (relación recursiva)
-            modelBuilder.Entity<Menu>()
-                .HasOne(m => m.ParentMenu)
-                .WithMany()
-                .HasForeignKey(m => m.ParentMenuId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // Configuración para Module
             modelBuilder.Entity<Module>()
-                .HasOne(m => m.ParentModule)
+                .HasOne(m => m.ParentModuleId)
                 .WithMany()
                 .HasForeignKey(m => m.ParentModuleId)
                 .IsRequired(false)
@@ -133,13 +117,13 @@ namespace Entity.Context
             // Configuración para City-Department
             modelBuilder.Entity<City>()
                 .HasOne(c => c.Department)
-                .WithMany(d => d.Cities)
+                .WithMany()
                 .HasForeignKey("DepartmentId");
 
             // Configuración para Department-Country
             modelBuilder.Entity<Department>()
                 .HasOne(d => d.Country)
-                .WithMany(c => c.Departments)
+                .WithMany()
                 .HasForeignKey("CountryId");
 
             // Configuración para todas las entidades que heredan de BaseEntity
@@ -214,7 +198,17 @@ namespace Entity.Context
         public override int SaveChanges()
         {
             EnsureAudit();
-            return base.SaveChanges();
+            
+            // Almacenar entradas con cambios antes de guardar
+            var modifiedEntries = TrackChangesForLogging();
+            
+            // Guardar cambios en la base de datos principal
+            var result = base.SaveChanges();
+            
+            // Registrar los cambios en la base de datos de logs
+            LogChanges(modifiedEntries);
+            
+            return result;
         }
 
         /// <summary>
@@ -223,10 +217,121 @@ namespace Entity.Context
         /// <param name="acceptAllChangesOnSuccess">Indica si se deben aceptar todos los cambios en caso de éxito.</param>
         /// <param name="cancellationToken">Token de cancelación para abortar la operación.</param>
         /// <returns>Número de filas afectadas de forma asíncrona.</returns>
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
         {
             EnsureAudit();
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            
+            // Almacenar entradas con cambios antes de guardar
+            var modifiedEntries = TrackChangesForLogging();
+            
+            // Guardar cambios en la base de datos principal
+            var result = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+            
+            // Registrar los cambios en la base de datos de logs
+            await LogChangesAsync(modifiedEntries, cancellationToken);
+            
+            return result;
+        }
+
+        /// <summary>
+        /// Captura todas las entidades modificadas para el registro de cambios.
+        /// </summary>
+        private List<(EntityState State, Type EntityType, object Entity, object OriginalValues, object CurrentValues, int EntityId)> TrackChangesForLogging()
+        {
+            if (_changeLogService == null)
+            {
+                return new List<(EntityState, Type, object, object, object, int)>();
+            }
+
+            var entries = new List<(EntityState State, Type EntityType, object Entity, object OriginalValues, object CurrentValues, int EntityId)>();
+            
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                // Solo rastrear entidades que son BaseEntity y que han sido modificadas/añadidas/eliminadas
+                if (entry.Entity is BaseEntity baseEntity &&
+                    (entry.State == EntityState.Modified ||
+                     entry.State == EntityState.Added ||
+                     entry.State == EntityState.Deleted))
+                {
+                    var entityType = entry.Entity.GetType();
+                    var originalValues = entry.State != EntityState.Added ? CreateValuesDictionary(entry.OriginalValues) : null;
+                    var currentValues = entry.State != EntityState.Deleted ? CreateValuesDictionary(entry.CurrentValues) : null;
+                    
+                    entries.Add((entry.State, entityType, entry.Entity, originalValues, currentValues, baseEntity.Id));
+                }
+            }
+            
+            return entries;
+        }
+
+        /// <summary>
+        /// Crea un diccionario con los valores de las propiedades de una entidad.
+        /// </summary>
+        private Dictionary<string, object> CreateValuesDictionary(Microsoft.EntityFrameworkCore.ChangeTracking.PropertyValues propertyValues)
+        {
+            var dictionary = new Dictionary<string, object>();
+            
+            foreach (var property in propertyValues.Properties)
+            {
+                var value = propertyValues[property];
+                dictionary[property.Name] = value ?? DBNull.Value;
+            }
+            
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Registra los cambios en la base de datos de logs.
+        /// </summary>
+        private void LogChanges(List<(EntityState State, Type EntityType, object Entity, object OriginalValues, object CurrentValues, int EntityId)> entries)
+        {
+            if (_changeLogService == null) return;
+
+            foreach (var (state, entityType, entity, originalValues, currentValues, entityId) in entries)
+            {
+                var action = state.ToString();
+                var tableName = entityType.Name;
+                
+                Task.Run(() => _changeLogService.LogChange(originalValues, currentValues, action, entityId, tableName));
+            }
+        }
+
+        /// <summary>
+        /// Registra los cambios en la base de datos de logs de forma asíncrona.
+        /// </summary>
+        private async Task LogChangesAsync(List<(EntityState State, Type EntityType, object Entity, object OriginalValues, object CurrentValues, int EntityId)> entries, CancellationToken cancellationToken = default)
+        {
+            if (_changeLogService == null) return;
+
+            foreach (var (state, entityType, entity, originalValues, currentValues, entityId) in entries)
+            {
+                var action = state.ToString();
+                var tableName = entityType.Name;
+                
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await _changeLogService.LogChange(originalValues, currentValues, action, entityId, tableName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Configura opciones adicionales del contexto, como el registro de datos sensibles.
+        /// </summary>
+        /// <param name="optionsBuilder">Constructor de opciones de configuración del contexto.</param>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+            // Otras configuraciones adicionales pueden ir aquí
+        }
+
+        /// <summary>
+        /// Configura convenciones de tipos de datos, estableciendo la precisión por defecto de los valores decimales.
+        /// </summary>
+        /// <param name="configurationBuilder">Constructor de configuración de modelos.</param>
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            configurationBuilder.Properties<decimal>().HavePrecision(18, 2);
         }
 
         /// <summary>
@@ -356,13 +461,6 @@ namespace Entity.Context
                 {
                     switch (entry.State)
                     {
-                        case EntityState.Added:
-                            entity.CreatedAt = currentDateTime;
-                            entity.Status = true;
-                            break;
-                        case EntityState.Modified:
-                            entity.UpdatedAt = currentDateTime;
-                            break;
                         case EntityState.Deleted:
                             // Convertimos el borrado en un borrado lógico
                             entry.State = EntityState.Modified;

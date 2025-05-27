@@ -7,17 +7,17 @@ using Entity.Model.Base;
 
 namespace Entity.Model
 {
-    public class ChangeLog : BaseEntity
+    public class ChangeLog
     {
-        public int UserId { get; set; }
-        public string Action { get; set; } // Create, Update, Delete
-        public string EntityType { get; set; } // Module, Form, etc.
-        public string EntityName { get; set; } // Name of the entity (e.g., Module, Form)
-        public string EntityId { get; set; }
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public int IdTable { get; set; }
+        public string TableName { get; set; }
         public string OldValues { get; set; }
         public string NewValues { get; set; }
-        public string IpAddress { get; set; }
-        public string UserAgent { get; set; } 
-        
+        public string Action { get; set; }
+        public string Active { get; set; }
+        public DateTime CreateAt { get; set; }
+
     }
 }

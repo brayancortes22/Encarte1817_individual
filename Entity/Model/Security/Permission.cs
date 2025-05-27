@@ -16,13 +16,8 @@ namespace Entity.Model
         public PermissionType Type { get; set; }    // Tipo de permiso (CRUD)  
               
         // propiedades de navegación
-        public Module Module { get; set; }
+        public ICollection<ModulePermission> ModulePermissions { get; set; }
         public ICollection<RolFormPermission> RolFormPermissions { get; set; }
         
-        // Constructor para inicializar colecciones
-        public Permission()
-        {
-            RolFormPermissions = new HashSet<RolFormPermission>();
-        }
     }
 }

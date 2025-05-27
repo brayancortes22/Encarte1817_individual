@@ -17,5 +17,7 @@ namespace Entity.Dtos.OtherDatesPerson.Country
         public string CountryCode { get; set; }
         public string Currency { get; set; }
         public string PhonePrefix { get; set; }
+
+        public int PersonId { get; set; }
     }
 }

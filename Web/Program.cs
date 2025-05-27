@@ -2,6 +2,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Entity.Context;
+using Utilities.Helpers;
 
 using Entity.Context;
 using Data.Interfaces;
@@ -43,6 +45,10 @@ builder.Services.AddSwaggerDocumentation();
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add LogDbContext (separate database for logs)
+builder.Services.AddDbContext<LogDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LogConnection")));
 
 // Configure email service
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
@@ -105,6 +111,8 @@ builder.Services.AddScoped<IAuthHeaderHelper, AuthHeaderHelper>();
 builder.Services.AddScoped<IRoleHelper, RoleHelper>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IValidationHelper, ValidationHelper>();
+builder.Services.AddScoped<IChangeLogService, ChangeLogService>();
+builder.Services.AddHttpContextAccessor();
 
 // Configure JWT Authentication
 builder.Services.AddAuthentication(options =>
@@ -176,8 +184,7 @@ var origenesPermitidos = builder.Configuration.GetValue<string>("origenesPermiti
     app.UseAuthentication();
     app.UseAuthorization();
 
-    app.MapControllers();
-    // Inicializar base de datos y aplicar migraciones
+    app.MapControllers();    // Inicializar base de datos y aplicar migraciones para la base de datos principal
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
@@ -186,14 +193,31 @@ var origenesPermitidos = builder.Configuration.GetValue<string>("origenesPermiti
             var dbContext = services.GetRequiredService<ApplicationDbContext>();
             var logger = services.GetRequiredService<ILogger<Program>>();
 
-            // Aplicar migraciones (esto crea la BD si no existe y aplica todas las migraciones)
+            // Aplicar migraciones para la base de datos principal
             dbContext.Database.Migrate();
-            logger.LogInformation("Base de datos verificada y migraciones aplicadas exitosamente.");
+            logger.LogInformation("Base de datos principal verificada y migraciones aplicadas exitosamente.");
         }
         catch (Exception ex)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "Ocurrió un error durante la migración de la base de datos.");
+            logger.LogError(ex, "Ocurrió un error durante la migración de la base de datos principal.");
+        }
+        
+        // Inicializar y aplicar migraciones para la base de datos de logs
+        try
+        {
+            var logDbContext = services.GetRequiredService<LogDbContext>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
+            // Aplica migraciones para la base de datos de logs
+            // Asegúrate de tener migraciones para LogDbContext o usa EnsureCreated en vez de Migrate
+            logDbContext.Database.EnsureCreated();
+            logger.LogInformation("Base de datos de logs verificada y creada exitosamente.");
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Ocurrió un error durante la creación de la base de datos de logs.");
         }
     }
 
