@@ -2,7 +2,7 @@ using AutoMapper;
 using Entity.Dtos.OtherDatesPerson.Provider;
 using Entity.Model;
 
-namespace Utilities.Mappers.Profiles
+namespace Utilities.Mappers.Profiles.OtherDatesPerson
 {
     /// <summary>
     /// Perfil de mapeo para la entidad Provider y sus DTOs relacionados

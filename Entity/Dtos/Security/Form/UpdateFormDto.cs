@@ -15,13 +15,8 @@ namespace Entity.Dtos.Security.Form
     {
 
         public string Name { get; set; }
-        
         public string Description { get; set; }
-        
         public string Url { get; set; }
-
-        public int ModuleId { get; set; }
-
         public int Order { get; set; }
     }
 }

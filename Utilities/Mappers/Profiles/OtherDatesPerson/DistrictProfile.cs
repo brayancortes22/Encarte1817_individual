@@ -2,7 +2,7 @@ using AutoMapper;
 using Entity.Dtos.OtherDatesPerson.District;
 using Entity.Model;
 
-namespace Utilities.Mappers.Profiles
+namespace Utilities.Mappers.Profiles.OtherDatesPerson
 {
     /// <summary>
     /// Perfil de mapeo para la entidad District y sus DTOs relacionados

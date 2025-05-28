@@ -2,7 +2,7 @@ using AutoMapper;
 using Entity.Dtos.Security.Permission;
 using Entity.Model;
 
-namespace Utilities.Mappers.Profiles
+namespace Utilities.Mappers.Profiles.Security
 {
     /// <summary>
     /// Perfil de mapeo para la entidad Permission y sus DTOs relacionados

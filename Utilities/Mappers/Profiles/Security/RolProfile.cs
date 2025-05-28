@@ -2,7 +2,7 @@
 using Entity.Model;
 using Entity.Dtos.RolDTO;
 
-namespace Utilities.Mappers.Profiles
+namespace Utilities.Mappers.Profiles.Security
 {
     public class RolProfile : Profile
     {

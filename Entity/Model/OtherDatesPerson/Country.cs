@@ -12,7 +12,7 @@ namespace Entity.Model
         public string CountryCode { get; set; }
         public string Currency { get; set; }
         public string PhonePrefix { get; set; }
-
+        public int PersonId { get; set; } // ID de la persona asociada al país
         // Relación con departamentos/estados
         public ICollection<Department> Departments { get; set; }
     }

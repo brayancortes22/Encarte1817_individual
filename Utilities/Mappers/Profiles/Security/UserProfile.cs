@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Mappers.Profiles
+namespace Utilities.Mappers.Profiles.Security
 {
     public class UserProfile : Profile
     {

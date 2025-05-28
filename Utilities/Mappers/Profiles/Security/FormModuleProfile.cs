@@ -2,7 +2,7 @@ using AutoMapper;
 using Entity.Dtos.Security.FormModule;
 using Entity.Model;
 
-namespace Utilities.Mappers.Profiles
+namespace Utilities.Mappers.Profiles.Security
 {
     public class FormModuleProfile : Profile
     {
