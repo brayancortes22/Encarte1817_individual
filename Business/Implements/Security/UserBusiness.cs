@@ -1,26 +1,20 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Business.Interfaces;
-using Business.Services;
-using Data.Implements.RolUserData;
-using Data.Interfaces;
-using Entity.Dtos.RolUserDTO;
-using Entity.Dtos.UserDTO;
+using Data.Interfaces.Security;
 using Entity.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Utilities.Exceptions;
 using Utilities.Interfaces;
 using Utilities.Mail;
 using ValidationException = Utilities.Exceptions.ValidationException;
-
+using Entity.Dtos;
 namespace Business.Implements
 {
     /// <summary>
-    /// Contiene la logica de negocio de los metodos especificos para la entidad Rol
-    /// Extiende BaseBusiness heredando la logica de negocio de los metodos base 
+    /// Implementación de la lógica de negocio para la gestión de usuarios.
+    /// Extiende BaseBusiness heredando la lógica de negocio de los métodos base CRUD.
     /// </summary>
     public class UserBusiness : BaseBusiness<User, UserDto>, IUserBusiness
     {
@@ -28,8 +22,17 @@ namespace Business.Implements
         private readonly IEmailService _emailService;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly AppSettings _appSettings;
-
-        public UserBusiness(IUserData userData, IMapper mapper, ILogger<UserBusiness> logger, IGenericIHelpers helpers, IEmailService emailService, IJwtGenerator jwtGenerator,
+        
+        /// <summary>
+        /// Constructor que inicializa las dependencias necesarias para la gestión de usuarios.
+        /// </summary>
+        public UserBusiness(
+            IUserData userData,
+            IMapper mapper,
+            ILogger<UserBusiness> logger,
+            IGenericIHelpers helpers,
+            IEmailService emailService,
+            IJwtGenerator jwtGenerator,
             IOptions<AppSettings> appSettings)
             : base(userData, mapper, logger, helpers)
         {
@@ -39,134 +42,228 @@ namespace Business.Implements
             _appSettings = appSettings.Value;
         }
 
-        ///<summary>
+        /// <summary>
         /// Obtiene un usuario por su dirección de correo electrónico.
-        ///</summary>
-        /// <param name="email">Correo electrónico del usuario.</param>
-        /// <returns>El objeto User si existe; de lo contrario, null.</returns>
+        /// </summary>
+        /// <param name="email">Correo electrónico del usuario a buscar.</param>
+        /// <returns>El usuario que coincida con el correo proporcionado o null si no se encuentra.</returns>
         public async Task<User> GetByEmailAsync(string email)
         {
-            var users = await _userData.GetAllAsync();
-            return users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
-        }
-
-        ///<summary>
-        /// Verifica las credenciales del usuario para iniciar sesión
-        ///</summary>
-        /// <param name="email">Correo electrónico del usuario.</param>
-        /// <param name="password">Contraseña en texto plano.</param>
-        /// <returns>El objeto User autenticado si las credenciales son válidas; de lo contrario, null.</returns>
-        public async Task<User> LoginAsync(string email, string password)
-        {
-            var user = await GetByEmailAsync(email);
-            if (user == null || !user.Status)
-                return null;
-
-            string hashedPassword = HashPassword(password);
-            return user.Password == hashedPassword ? user : null;
-        }
-
-        public async Task<bool> ValidateCredentialsAsync(string email, string password)
-        {
-            var user = await LoginAsync(email, password);
-            return user != null;
-        }
-
-        /// <summary>
-        /// Genera un hash SHA-256 a partir de una contraseña en texto plano.
-        /// </summary>
-        /// <param name="password">Contraseña en texto plano a ser hasheada.</param>
-        /// <returns>Una cadena en formato hexadecimal que representa el hash SHA-256 de la contraseña.</returns>
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
+            try
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("El email no puede estar vacío.");
+
+                var user = await _userData.GetByEmailAsync(email);
+                return user ?? throw new ValidationException("Usuario no encontrado");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al buscar usuario por email: {ex.Message}");
+                throw;
             }
         }
 
-        ///<summary>
-        /// Crea un nuevo usuario con su contraseña hasheada y estado activo.
-        ///</summary>
-        /// <param name="dto">Objeto UserDto con los datos del nuevo usuario.</param>
-        /// <returns>El usuario creado como UserDto.</returns>
-        public async override Task<UserDto> CreateAsync(UserDto dto)
+        /// <summary>
+        /// Valida las credenciales de un usuario comparando el correo y la contraseña.
+        /// </summary>
+        /// <param name="email">Correo electrónico del usuario.</param>
+        /// <param name="password">Contraseña en texto plano para validar.</param>
+        /// <returns>True si las credenciales son válidas; de lo contrario false.</returns>
+        public async Task<bool> ValidateCredentialsAsync(string email, string password)
         {
-            var user = _mapper.Map<User>(dto);
-            user.Password = HashPassword(user.Password);
-            user.Status = true;
-          
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                    return false;
 
-            var createdUser = await _userData.CreateAsync(user);
-            return _mapper.Map<UserDto>(createdUser);
-
+                // Hashear la contraseña para compararla con la almacenada
+                var hashedPassword = HashPassword(password);
+                var user = await _userData.LoginAsync(email, hashedPassword);
+                
+                return user != null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al validar credenciales: {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>
         /// Actualiza parcialmente los datos de un usuario.
         /// </summary>
-        /// <param name="dto">Objeto UpdateUserDto con los datos a modificar.</param>
-        /// <returns> True si la actualización fue exitosa; de lo contrario, false.</returns>
-        /// <exception cref="ArgumentException"> Se lanza si el ID del usuario es inválido.</exception>
+        /// <param name="dto">Objeto que contiene los datos parciales a actualizar del usuario.</param>
+        /// <returns>True si la actualización fue exitosa; de lo contrario false.</returns>
         public async Task<bool> UpdateParcialUserAsync(UpdateUserDto dto)
         {
-            if (dto.Id <= 0)
-                throw new ArgumentException("ID inválido.");
+            try
+            {
+                if (dto == null || dto.Id <= 0)
+                    throw new ArgumentException("Los datos de actualización no son válidos.");
 
-            var user = _mapper.Map<User>(dto);
-
-            var result = await _userData.UpdatePartial(user); // esto ya retorna bool
-            return result;
+                // Crear un diccionario con las propiedades a actualizar
+                var propertyValues = new Dictionary<string, object>();
+                
+                // Añadir al diccionario solo las propiedades no nulas
+                if (!string.IsNullOrWhiteSpace(dto.Email))
+                {
+                    // Comprobar que el email no esté en uso por otro usuario
+                    if (await _userData.ExistsByEmailAsync(dto.Email, dto.Id))
+                        throw new ValidationException("El email ya está en uso por otro usuario.");
+                        
+                    propertyValues.Add("Email", dto.Email);
+                }
+                
+                if (dto.PersonId > 0)
+                    propertyValues.Add("PersonId", dto.PersonId);
+                
+                // Si no hay propiedades a actualizar, salir
+                if (propertyValues.Count == 0)
+                    return true;
+                    
+                // Actualizar parcialmente la entidad
+                var updatedUser = await _data.UpdatePartialAsync(dto.Id, propertyValues);
+                return updatedUser != null;
+            }
+            catch (ValidationException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al actualizar parcialmente el usuario: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
-        /// Activa o desactiva un usuario de forma lógica según su ID.
+        /// Cambia el estado activo/inactivo de un usuario.
         /// </summary>
-        /// <param name="dto">Objeto DeleteLogicalUserDto" con el ID y estado deseado.</param>
-        /// <returns>True si se actualizó el estado correctamente; de lo contrario, false.</returns>
-        /// <exception cref="ValidationException">Si el ID es inválido.</exception>
-        /// <exception cref="EntityNotFoundException">Si el usuario no existe.</exception>
+        /// <param name="dto">Objeto que contiene el ID del usuario y el nuevo estado activo.</param>
+        /// <returns>True si el cambio de estado fue exitoso; de lo contrario false.</returns>
         public async Task<bool> SetUserActiveAsync(DeleteLogicalUserDto dto)
         {
-            if (dto == null || dto.Id <= 0)
-                throw new ValidationException("Id", "El ID del usuario es inválido");
-
-            var exists = await _userData.GetByIdAsync(dto.Id)
-                ?? throw new EntityNotFoundException("user", dto.Id);
-
-            return await _userData.Active(dto.Id, dto.Status);
+            try
+            {
+                if (dto == null || dto.Id <= 0)
+                    throw new ArgumentException("Los datos para cambiar el estado no son válidos.");
+                    
+                return await _userData.SetActiveStatusAsync(dto.Id, dto.Status);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al cambiar el estado del usuario: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
-        /// Cambia la contraseña de un usuario identificado por su ID.
+        /// Autentica un usuario en el sistema usando su correo electrónico y contraseña.
         /// </summary>
-        /// <param name="dto">Objeto <see cref="UpdatePasswordUserDto"/> con ID y nueva contraseña.</param>
-        /// <returns>True si la contraseña se cambió exitosamente; de lo contrario,false.</returns>
+        /// <param name="email">Correo electrónico del usuario.</param>
+        /// <param name="password">Contraseña del usuario.</param>
+        /// <returns>Objeto User si las credenciales son válidas; de lo contrario, null.</returns>
+        public async Task<User> LoginAsync(string email, string password)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                    throw new ArgumentException("El email y la contraseña son obligatorios.");
+                
+                // Hashear la contraseña para compararla con la almacenada
+                var hashedPassword = HashPassword(password);
+                var user = await _userData.LoginAsync(email, hashedPassword);
+                return user ?? throw new ValidationException("Credenciales incorrectas");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error en el proceso de login: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Cambia la contraseña de un usuario existente.
+        /// </summary>
+        /// <param name="dto">Objeto que contiene el ID del usuario, la contraseña actual y la nueva contraseña.</param>
+        /// <returns>True si la contraseña se cambió correctamente; false si el usuario no existe o la contraseña actual no coincide.</returns>
         public async Task<bool> ChangePasswordAsync(UpdatePasswordUserDto dto)
         {
-            // Aquí puedes hacer validaciones si es necesario
-
-            // Llamada al Data con los datos extraídos del DTO
-            return await _userData.ChangePasswordAsync(dto.Id, dto.Password);
+            try
+            {
+                if (dto == null || dto.Id <= 0)
+                    throw new ArgumentException("Los datos para cambiar la contraseña no son válidos.");
+                
+                // Obtener el usuario
+                var user = await _data.GetByIdAsync(dto.Id);
+                if (user == null)
+                    return false;
+                
+                // Verificar la contraseña actual
+                var hashedCurrentPassword = HashPassword(dto.CurrentPassword);
+                if (user.Password != hashedCurrentPassword)
+                    return false;
+                
+                // Actualizar con la nueva contraseña
+                var hashedNewPassword = HashPassword(dto.NewPassword);
+                return await _userData.ChangePasswordAsync(dto.Id, hashedNewPassword);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al cambiar la contraseña: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
-        /// Asigna un rol a un usuario.
+        /// Cambia la contraseña de un usuario por su ID y nueva contraseña.
         /// </summary>
-        /// <param name="dto">Objeto <see cref="AssignUserRolDto"/> con ID de usuario e ID de rol.</param>
-        /// <returns>True si se asignó el rol correctamente; de lo contrario, false.</returns>
-        public async Task<bool> AssignRolAsync(AssignUserRolDto dto)
+        /// <param name="userId">ID del usuario.</param>
+        /// <param name="newPassword">Nueva contraseña en texto plano.</param>
+        /// <returns>True si la contraseña se cambió correctamente; false si el usuario no existe.</returns>
+        public async Task<bool> ChangePasswordAsync(int userId, string newPassword)
         {
-            // Aquí puedes hacer validaciones si deseas
-            return await _userData.AssingRolAsync(dto.UserId, dto.RolId);
+            try
+            {
+                if (userId <= 0 || string.IsNullOrWhiteSpace(newPassword))
+                    throw new ArgumentException("Datos inválidos para cambiar la contraseña.");
+
+                var user = await _data.GetByIdAsync(userId);
+                if (user == null)
+                    return false;
+
+                var hashedNewPassword = HashPassword(newPassword);
+                return await _userData.ChangePasswordAsync(userId, hashedNewPassword);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al cambiar la contraseña (por ID): {ex.Message}");
+                throw;
+            }
         }
 
+        /// <summary>
+        /// Asigna un rol a un usuario específico.
+        /// </summary>
+        /// <param name="dto">Objeto que contiene el ID del usuario y el ID del rol a asignar.</param>
+        /// <returns>True si el rol fue asignado correctamente; false si el usuario o el rol no existen.</returns>
+        public async Task<bool> AssignRolAsync(AssignUserRolDto dto)
+        {
+            try
+            {
+                if (dto == null || dto.UserId <= 0 || dto.RolId <= 0)
+                    throw new ArgumentException("Los datos para asignar el rol no son válidos.");
+                
+                return await _userData.AssingRolAsync(dto.UserId, dto.RolId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al asignar rol al usuario: {ex.Message}");
+                throw;
+            }
+        }
 
         /// <summary>
         /// Notifica al usuario mediante correo electrónico sobre la creación de su cuenta.
@@ -174,23 +271,23 @@ namespace Business.Implements
         /// <param name="emailDestino">Dirección de correo electrónico del destinatario.</param>
         /// <param name="nombre">Nombre del usuario para personalizar el mensaje.</param>
         /// <returns>Una tarea que representa la operación asíncrona.</returns>
-        /// <exception cref="Exception">Se lanza cuando el envío del correo falla.</exception>
         public async Task NotificarUsuarioAsync(string emailDestino, string nombre)
         {
-
-            string asunto = "Bienvenido al sistema";
-            string cuerpo = $"Hola {nombre}, tu cuenta ha sido creada con éxito.";
-
-            _logger.LogInformation($"Enviando correo de notificación a {emailDestino}");
-
-            bool enviado = await _emailService.SendEmailAsync(emailDestino, asunto, cuerpo);
-            if (!enviado)
+            try
             {
-                _logger.LogError($"Error al enviar correo de notificación a {emailDestino}");
-                throw new Exception("No se pudo enviar el correo de notificación.");
+                if (string.IsNullOrWhiteSpace(emailDestino) || string.IsNullOrWhiteSpace(nombre))
+                    throw new ArgumentException("El email y nombre son obligatorios para enviar la notificación.");
+                
+                var subject = "¡Bienvenido al sistema!";
+                var message = $"Hola {nombre}, tu cuenta ha sido creada con éxito. Por favor, configura tu contraseña.";
+                
+                await _emailService.SendEmailAsync(emailDestino, subject, message);
             }
-
-            _logger.LogInformation($"Correo de notificación enviado exitosamente a {emailDestino}");
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al notificar al usuario: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -198,52 +295,50 @@ namespace Business.Implements
         /// </summary>
         /// <param name="email">Dirección de correo electrónico del usuario que solicita recuperar su contraseña.</param>
         /// <returns>Una tarea que representa la operación asíncrona.</returns>
-        /// <exception cref="EntityNotFoundException">Se lanza cuando no se encuentra el usuario con el correo proporcionado o cuando está inactivo.</exception>
-        /// <exception cref="Exception">Se lanza cuando el envío del correo falla.</exception>
         public async Task EnviarCorreoRecuperacionAsync(string email)
         {
-            // Verificamos que el email no esté vacío
-            if (string.IsNullOrWhiteSpace(email))
-                throw new ValidationException("email", "La dirección de correo electrónico no puede estar vacía.");
-
-            // Buscamos al usuario por su correo electrónico
-            var usuario = await _userData.GetByEmailAsync(email);
-
-            // Verificamos que el usuario exista y esté activo
-            if (usuario == null || !usuario.Status)
-                throw new EntityNotFoundException("Usuario", email);
-
-            // Generamos un token JWT con expiración de 15 minutos para el restablecimiento de contraseña
-            string token = _jwtGenerator.GenerarTokenRecuperacion(usuario);
-
-            // Creamos el enlace que el usuario deberá seguir para restablecer su contraseña
-            string resetLink = $"{_appSettings.ResetPasswordBaseUrl}?token={token}";
-
-            _logger.LogInformation($"Generando enlace de recuperación de contraseña para {email}");
-
-            // Preparamos el asunto y cuerpo del correo electrónico
-            // El cuerpo utiliza formato HTML para mejor presentación
-            string subject = "Restablecimiento de contraseña";
-            string body = $@"
-        <p>Haz clic en el siguiente enlace para cambiar tu contraseña:</p>
-        <p><a href='{resetLink}' target='_blank'>Restablecer contraseña</a></p>
-        <p>Este enlace expirará en 15 minutos por razones de seguridad.</p>
-        <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
-        <p>Saludos,<br>El equipo de tu aplicación</p>";
-
-            // Enviamos el correo con formato HTML habilitado
-            _logger.LogInformation($"Enviando correo de recuperación a {email}");
-            bool enviado = await _emailService.SendEmailAsync(email, subject, body, isHtml: true);
-
-            // Verificamos si el envío fue exitoso
-            if (!enviado)
+            try
             {
-                _logger.LogError($"Error al enviar correo de recuperación a {email}");
-                throw new Exception("No se pudo enviar el correo de recuperación.");
+                if (string.IsNullOrWhiteSpace(email))
+                    throw new ArgumentException("El email es obligatorio para enviar el correo de recuperación.");
+                
+                // Comprobar que el usuario existe
+                var user = await _userData.GetByEmailAsync(email);
+                if (user == null)
+                    throw new ValidationException("No existe un usuario con este correo electrónico.");
+                
+                // Generar token para restablecer contraseña
+                var token = _jwtGenerator.GeneratePasswordResetToken(user);
+                var resetUrl = $"{_appSettings.AppUrl}/reset-password?token={token}";
+                
+                var subject = "Recuperación de contraseña";
+                var message = $"Para recuperar tu contraseña, haz clic en el siguiente enlace: {resetUrl}";
+                
+                await _emailService.SendEmailAsync(email, subject, message);
             }
-
-            _logger.LogInformation($"Correo de recuperación enviado exitosamente a {email}");
+            catch (ValidationException ex)
+            {
+                _logger.LogWarning(ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al enviar correo de recuperación: {ex.Message}");
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Genera un hash SHA256 para una contraseña.
+        /// </summary>
+        /// <param name="password">Contraseña en texto plano.</param>
+        /// <returns>Representación hash de la contraseña.</returns>
+        private string HashPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
         }
     }
-
 }

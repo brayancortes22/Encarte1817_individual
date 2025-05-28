@@ -5,33 +5,33 @@ using Entity.Model;
 namespace Business.Interfaces
 {
     ///<summary>
-    /// Define los métodos de negocio específicos para la gestíon de usuarios.
-    ///Hereda operaciones CRUD genéricas de <see cref="IBaseBusiness{User, UserDto}"/>.
+    /// Define los mï¿½todos de negocio especï¿½ficos para la gestï¿½on de usuarios.
+    ///Hereda operaciones CRUD genï¿½ricas de <see cref="IBaseBusiness{User, UserDto}"/>.
     ///</summary>
     public interface IUserBusiness : IBaseBusiness<User, UserDto>
     {
         /// <summary>
-        /// Obtiene un usuario por su dirección de correo electrónico.
+        /// Obtiene un usuario por su direcciï¿½n de correo electrï¿½nico.
         /// </summary>
-        /// <param name="email">Correo electrónico del usuario a buscar.</param>
+        /// <param name="email">Correo electrï¿½nico del usuario a buscar.</param>
         /// <returns>
         /// El <see cref="User"/> que coincida con el correo proporcionado o <c>null</c> si no se encuentra.
         /// </returns>
         Task<User> GetByEmailAsync(string email);
 
         /// <summary>
-        /// Valida las credenciales de un usuario comparando el correo y la contraseña.
+        /// Valida las credenciales de un usuario comparando el correo y la contraseï¿½a.
         /// </summary>
-        /// <param name="email">Correo electrónico del usuario.</param>
-        /// <param name="password">Contraseña en texto plano para validar.</param>
-        ///<returns>True si las credenciales son válidas; de lo contario false</returns>
+        /// <param name="email">Correo electrï¿½nico del usuario.</param>
+        /// <param name="password">Contraseï¿½a en texto plano para validar.</param>
+        ///<returns>True si las credenciales son vï¿½lidas; de lo contario false</returns>
         Task<bool> ValidateCredentialsAsync(string email, string password);
 
         /// <summary>
         /// Actualiza parcialmente los datos de un usuario.
         /// </summary>
         /// <param name="dto">Objeto que contiene los datos parciales a actualizar del usuario.</param>
-        ///<returns>True si la actualización fue exitosa; de lo contario false</returns>
+        ///<returns>True si la actualizaciï¿½n fue exitosa; de lo contario false</returns>
         Task<bool> UpdateParcialUserAsync(UpdateUserDto dto);
 
         /// <summary>
@@ -44,43 +44,42 @@ namespace Business.Interfaces
 
 
         ///<summary>
-        /// Autentica un usuario en el sistema usando su corre electrónico y contraseña.
+        /// Autentica un usuario en el sistema usando su corre electrï¿½nico y contraseï¿½a.
         //</summary>
-        /// <param name="email">Correo electrónico del usuario.</param>
-        /// <param name="password">Contraseña del usuario.</param>
-        /// <returns>Objeto <see cref="User"/> si las credenciales son válidas; de lo contrario, null.</returns>
+        /// <param name="email">Correo electrï¿½nico del usuario.</param>
+        /// <param name="password">Contraseï¿½a del usuario.</param>
+        /// <returns>Objeto <see cref="User"/> si las credenciales son vï¿½lidas; de lo contrario, null.</returns>
         Task<User> LoginAsync(string email, string password);
 
         ///<summary>
-        /// Cambia la contraseña de un usuario existente
+        /// Cambia la contraseï¿½a de un usuario existente
         ///</summary>
-        /// <param name="dto">Objeto que contiene el ID del usuario, la contraseña actual y la nueva contraseña.</param>
-        /// <returns> True si la contraseña se cambió correctamente; false si el usuario no existe o la contraseña actual no coincide.</returns>
+        /// <param name="dto">Objeto que contiene el ID del usuario, la contraseï¿½a actual y la nueva contraseï¿½a.</param>
+        /// <returns> True si la contraseï¿½a se cambiï¿½ correctamente; false si el usuario no existe o la contraseï¿½a actual no coincide.</returns>
         Task<bool> ChangePasswordAsync(UpdatePasswordUserDto dto);
 
         ///<summary>
-        /// Asigna un rol a un usuario específico.
+        /// Asigna un rol a un usuario especï¿½fico.
         ///</summary>
         /// <param name="dto">Objeto que contiene el ID del usuario y el ID del rol a asignar.</param>
         /// <returns> True si el rol fue asignado correctamente; false si el usuario o el rol no existen. </returns>
         Task<bool> AssignRolAsync(AssignUserRolDto dto);
 
         /// <summary>
-        /// Notifica al usuario mediante correo electrónico sobre la creación de su cuenta.
+        /// Notifica al usuario mediante correo electrï¿½nico sobre la creaciï¿½n de su cuenta.
         /// </summary>
-        /// <param name="emailDestino">Dirección de correo electrónico del destinatario.</param>
+        /// <param name="emailDestino">Direcciï¿½n de correo electrï¿½nico del destinatario.</param>
         /// <param name="nombre">Nombre del usuario para personalizar el mensaje.</param>
-        /// <returns>Una tarea que representa la operación asíncrona.</returns>
+        /// <returns>Una tarea que representa la operaciï¿½n asï¿½ncrona.</returns>
         Task NotificarUsuarioAsync(string emailDestino, string nombre);
 
         /// <summary>
-        /// Envía un correo electrónico con un enlace para restablecer la contraseña del usuario.
+        /// Envï¿½a un correo electrï¿½nico con un enlace para restablecer la contraseï¿½a del usuario.
         /// </summary>
-        /// <param name="email">Dirección de correo electrónico del usuario que solicita recuperar su contraseña.</param>
-        /// <returns>Una tarea que representa la operación asíncrona.</returns>
+        /// <param name="email">Direcciï¿½n de correo electrï¿½nico del usuario que solicita recuperar su contraseï¿½a.</param>
+        /// <returns>Una tarea que representa la operaciï¿½n asï¿½ncrona.</returns>
         Task EnviarCorreoRecuperacionAsync(string email);
-
-
+        Task<bool> ChangePasswordAsync(int userId, string hashedPassword);
     }
 }
     

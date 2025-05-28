@@ -29,6 +29,13 @@ namespace Utilities.Interfaces
         /// valida cualquier token JWT, útil para verificar si el token de recuperación aún es válido.
         /// </summary>
         ClaimsPrincipal? ValidateToken(string token);
+
+        /// <summary>
+        /// Genera un token JWT específico para restablecer contraseña.
+        /// </summary>
+        /// <param name="user">Usuario que solicita restablecer su contraseña</param>
+        /// <returns>Token JWT con tiempo de expiración corto</returns>
+        string GeneratePasswordResetToken(User user);
     }
 
     }

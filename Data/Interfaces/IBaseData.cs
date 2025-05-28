@@ -3,53 +3,86 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static Dapper.SqlMapper;
 
 namespace Data.Interfaces
-
 {
     /// <summary>
-    /// Interfaz que me define los métodos generales
+    /// Interfaz que define los métodos generales para operaciones CRUD
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-
+    /// <typeparam name="T">Tipo de entidad heredada de BaseEntity</typeparam>
     public interface IBaseModelData<T> where T : BaseEntity
     {
         /// <summary>
         /// Método para obtener una entidad por su ID
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        Task<T> GetByIdAsync(int id);
+        /// <param name="id">ID de la entidad</param>
+        /// <returns>La entidad encontrada o null</returns>
+        Task<T?> GetByIdAsync(int id);
 
         /// <summary>
-        /// Método para obtener todos las entidades
+        /// Método para obtener todas las entidades activas
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Lista de entidades activas</returns>
         Task<List<T>> GetAllAsync();
 
         /// <summary>
-        /// Crea una entidad
+        /// Método para obtener todas las entidades (activas e inactivas)
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <returns>Lista completa de entidades</returns>
+        Task<List<T>> GetAllWithInactiveAsync();
+
+        /// <summary>
+        /// Crea una nueva entidad
+        /// </summary>
+        /// <param name="entity">Entidad a crear</param>
+        /// <returns>Entidad creada con su ID asignado</returns>
         Task<T> CreateAsync(T entity);
 
         /// <summary>
         /// Actualiza todos los valores de una entidad
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">Entidad con los nuevos valores</param>
+        /// <returns>Entidad actualizada</returns>
         Task<T> UpdateAsync(T entity);
 
+        /// <summary>
+        /// Actualiza parcialmente una entidad (solo los campos proporcionados)
+        /// </summary>
+        /// <param name="id">ID de la entidad a actualizar</param>
+        /// <param name="propertyValues">Diccionario de propiedades y valores a actualizar</param>
+        /// <returns>Entidad actualizada o null si no se encuentra</returns>
+        Task<T?> UpdatePartialAsync(int id, Dictionary<string, object> propertyValues);
 
         /// <summary>
         /// Eliminación concreta o absoluta
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">ID de la entidad a eliminar</param>
+        /// <returns>True si se eliminó correctamente</returns>
         Task<bool> DeleteAsync(int id);
+
+        /// <summary>
+        /// Eliminación lógica (cambio de estado a inactivo)
+        /// </summary>
+        /// <param name="id">ID de la entidad a desactivar</param>
+        /// <returns>True si se desactivó correctamente</returns>
+        Task<bool> SoftDeleteAsync(int id);
+
+        /// <summary>
+        /// Busca entidades que cumplan con una condición específica
+        /// </summary>
+        /// <param name="predicate">Expresión lambda para la condición</param>
+        /// <returns>Lista de entidades que cumplen la condición</returns>
+        Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
+
+        /// <summary>
+        /// Verifica si existe alguna entidad que cumpla con la condición especificada
+        /// </summary>
+        /// <param name="predicate">Expresión lambda para la condición</param>
+        /// <returns>True si existe al menos una entidad que cumple la condición</returns>
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
     }
 }

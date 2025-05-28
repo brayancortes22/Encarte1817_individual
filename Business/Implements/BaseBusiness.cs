@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using Business.Interfaces;
@@ -28,7 +30,6 @@ namespace Business.Implements
     /// </remarks>
     public class BaseBusiness<T, D> : ABaseBusiness<T, D> where T : BaseEntity where D : BaseDto
     {
-
         /// <summary>
         /// Instancia de AutoMapper para realizar el mapeo entre DTOs y entidades.
         /// </summary>
@@ -51,7 +52,6 @@ namespace Business.Implements
         /// </summary>
         protected readonly ILogger _logger;
 
-
         /// <summary>
         /// Inicializa una nueva instancia de la clase BaseBusiness.
         /// </summary>
@@ -71,7 +71,6 @@ namespace Business.Implements
             _logger = logger;
             _helpers = helpers ?? throw new ArgumentNullException(nameof(helpers));
         }
-
 
         /// <summary>
         /// Valida un DTO utilizando las reglas de validación de FluentValidation.
@@ -93,32 +92,43 @@ namespace Business.Implements
         }
 
         /// <summary>
-        /// Obtiene todos los registros de la entidad desde el repositorio.
+        /// Obtiene todos los registros activos de la entidad desde el repositorio.
         /// </summary>
         /// <returns>
-        /// Una lista de DTOs que representan todas las entidades almacenadas
+        /// Una lista de DTOs que representan todas las entidades activas
         /// </returns>
-        /// <exception cref="Exception">
-        /// Se relanza cualquier excepción que ocurra durante la operación de consulta
-        /// </exception>
-        /// <remarks>
-        /// Este método:
-        /// 1. Consulta todos los registros del repositorio
-        /// 2. Los mapea automáticamente a DTOs
-        /// 3. Registra la operación en el log
-        /// 4. Maneja y registra cualquier error que pueda ocurrir
-        /// </remarks>
         public override async Task<List<D>> GetAllAsync()
         {
             try
             {
                 var entities = await _data.GetAllAsync();
-                _logger.LogInformation($"Obteniendo todos los registros de {typeof(T).Name}");
+                _logger.LogInformation($"Obteniendo todos los registros activos de {typeof(T).Name}");
                 return _mapper.Map<IList<D>>(entities).ToList();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error al obtener registros de {typeof(T).Name}: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene todos los registros (activos e inactivos) de la entidad desde el repositorio.
+        /// </summary>
+        /// <returns>
+        /// Una lista completa de DTOs que representan todas las entidades
+        /// </returns>
+        public override async Task<List<D>> GetAllWithInactiveAsync()
+        {
+            try
+            {
+                var entities = await _data.GetAllWithInactiveAsync();
+                _logger.LogInformation($"Obteniendo todos los registros (activos e inactivos) de {typeof(T).Name}");
+                return _mapper.Map<IList<D>>(entities).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al obtener todos los registros de {typeof(T).Name}: {ex.Message}");
                 throw;
             }
         }
@@ -130,20 +140,13 @@ namespace Business.Implements
         /// <returns>
         /// El DTO correspondiente a la entidad encontrada, o null si no existe
         /// </returns>
-        /// <exception cref="Exception">
-        /// Se relanza cualquier excepción que ocurra durante la operación de consulta
-        /// </exception>
-        /// <remarks>
-        /// Este método busca una entidad específica por ID y la convierte al DTO correspondiente.
-        /// Si la entidad no existe, retorna null.
-        /// </remarks>
-        public override async Task<D> GetByIdAsync(int id)
+        public override async Task<D?> GetByIdAsync(int id)
         {
             try
             {
-                var entities = await _data.GetByIdAsync(id);
+                var entity = await _data.GetByIdAsync(id);
                 _logger.LogInformation($"Obteniendo {typeof(T).Name} con ID: {id}");
-                return _mapper.Map<D>(entities);
+                return entity != null ? _mapper.Map<D>(entity) : null;
             }
             catch (Exception ex)
             {
@@ -159,17 +162,6 @@ namespace Business.Implements
         /// <returns>
         /// El DTO de la entidad creada, incluyendo el ID asignado y cualquier otro campo generado
         /// </returns>
-        /// <exception cref="Exception">
-        /// Se relanza cualquier excepción que ocurra durante la operación de creación
-        /// </exception>
-        /// <remarks>
-        /// Este método:
-        /// 1. Valida el DTO de entrada
-        /// 2. Lo mapea a una entidad
-        /// 3. Crea la entidad en el repositorio
-        /// 4. Mapea la entidad creada de vuelta a DTO y la retorna
-        /// 5. Registra la operación y maneja errores
-        /// </remarks>
         public override async Task<D> CreateAsync(D dto)
         {
             try
@@ -194,27 +186,40 @@ namespace Business.Implements
         /// <returns>
         /// El DTO de la entidad actualizada
         /// </returns>
-        /// <exception cref="Exception">
-        /// Se relanza cualquier excepción que ocurra durante la operación de actualización
-        /// </exception>
-        /// <remarks>
-        /// NOTA: Esta implementación actual solo valida y mapea el DTO, pero no persiste los cambios.
-        /// Es probable que falte la llamada a _repository.UpdateAsync(entity) para completar la operación.
-        /// </remarks>
         public override async Task<D> UpdateAsync(D dto)
         {
             try
             {
-
                 await EnsureValid(dto);
                 var entity = _mapper.Map<T>(dto);
                 entity = await _data.UpdateAsync(entity);
-                _logger.LogInformation($"Actualizando {typeof(T).Name} desde DTO");
+                _logger.LogInformation($"Actualizando {typeof(T).Name} con ID: {entity.Id}");
                 return _mapper.Map<D>(entity);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error al actualizar {typeof(T).Name} desde DTO: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza parcialmente una entidad existente (solo los campos proporcionados)
+        /// </summary>
+        /// <param name="id">ID de la entidad a actualizar</param>
+        /// <param name="propertyValues">Diccionario con los nombres de las propiedades y sus nuevos valores</param>
+        /// <returns>El DTO de la entidad actualizada o null si no se encuentra</returns>
+        public override async Task<D?> UpdatePartialAsync(int id, Dictionary<string, object> propertyValues)
+        {
+            try
+            {
+                var entity = await _data.UpdatePartialAsync(id, propertyValues);
+                _logger.LogInformation($"Actualizando parcialmente {typeof(T).Name} con ID: {id}");
+                return entity != null ? _mapper.Map<D>(entity) : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al actualizar parcialmente {typeof(T).Name} con ID {id}: {ex.Message}");
                 throw;
             }
         }
@@ -226,26 +231,76 @@ namespace Business.Implements
         /// <returns>
         /// true si la entidad fue eliminada exitosamente; false en caso contrario
         /// </returns>
-        /// <exception cref="Exception">
-        /// Se relanza cualquier excepción que ocurra durante la operación de eliminación
-        /// </exception>
-        /// <remarks>
-        /// Esta operación es irreversible y elimina permanentemente la entidad de la base de datos.
-        /// Se recomienda verificar la existencia de la entidad antes de intentar eliminarla.
-        /// </remarks>
         public override async Task<bool> DeleteAsync(int id)
         {
             try
             {
-                _logger.LogInformation($"Eliminando {typeof(T).Name} con ID: {id}");
+                _logger.LogInformation($"Eliminando permanentemente {typeof(T).Name} con ID: {id}");
                 return await _data.DeleteAsync(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error al eliminar {typeof(T).Name} con ID {id}: {ex.Message}");
+                _logger.LogError($"Error al eliminar permanentemente {typeof(T).Name} con ID {id}: {ex.Message}");
                 throw;
             }
         }
 
+        /// <summary>
+        /// Elimina lógicamente una entidad (cambio de estado a inactivo)
+        /// </summary>
+        /// <param name="id">ID de la entidad a desactivar</param>
+        /// <returns>True si se desactivó correctamente, False si no se encontró</returns>
+        public override async Task<bool> SoftDeleteAsync(int id)
+        {
+            try
+            {
+                _logger.LogInformation($"Eliminando lógicamente {typeof(T).Name} con ID: {id}");
+                return await _data.SoftDeleteAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al eliminar lógicamente {typeof(T).Name} con ID {id}: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Busca entidades que cumplan con una condición específica
+        /// </summary>
+        /// <param name="predicate">Expresión lambda que define la condición de búsqueda</param>
+        /// <returns>Lista de DTOs que cumplen la condición</returns>
+        public override async Task<List<D>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            try
+            {
+                var entities = await _data.FindAsync(predicate);
+                _logger.LogInformation($"Buscando {typeof(T).Name} que cumplen condición específica");
+                return _mapper.Map<IList<D>>(entities).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al buscar {typeof(T).Name} por condición: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Verifica si existe alguna entidad que cumpla con la condición especificada
+        /// </summary>
+        /// <param name="predicate">Expresión lambda que define la condición</param>
+        /// <returns>True si existe al menos una entidad que cumple la condición</returns>
+        public override async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
+        {
+            try
+            {
+                _logger.LogInformation($"Verificando existencia de {typeof(T).Name} que cumple condición específica");
+                return await _data.ExistsAsync(predicate);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error al verificar existencia de {typeof(T).Name}: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

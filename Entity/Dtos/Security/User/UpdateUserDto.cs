@@ -9,11 +9,19 @@ using Entity.Dtos.Base;
 namespace Entity.Dtos.UserDTO
 {
     /// <summary>
-    /// DTO para mostrar información básica de un usuario (operación get all, create, update(patch-put))
+    /// DTO para actualización parcial de un usuario
     /// </summary>
     public class UpdateUserDto : BaseDto
     {
-        public  string Email { get; set; }
-        public  string Password { get; set; }
+        /// <summary>
+        /// Email del usuario (opcional para actualización parcial)
+        /// </summary>
+        [EmailAddress(ErrorMessage = "El formato del email no es válido")]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// ID de la persona asociada al usuario (opcional para actualización parcial)
+        /// </summary>
+        public int PersonId { get; set; }
     }
 }

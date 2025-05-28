@@ -13,6 +13,17 @@ namespace Entity.Dtos.UserDTO
     /// </summary>
     public class UpdatePasswordUserDto : BaseDto
     {
-        public  string Password { get; set; }
+        /// <summary>
+        /// Contraseña actual del usuario
+        /// </summary>
+        [Required(ErrorMessage = "La contraseña actual es obligatoria")]
+        public string CurrentPassword { get; set; }
+        
+        /// <summary>
+        /// Nueva contraseña del usuario
+        /// </summary>
+        [Required(ErrorMessage = "La nueva contraseña es obligatoria")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener al menos 6 caracteres")]
+        public string NewPassword { get; set; }
     }
 }

@@ -3,40 +3,39 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Entity.Context;
-using Utilities.Helpers;
-
-using Entity.Context;
+//datas
+using Data.Implements.BaseData;
 using Data.Interfaces;
-using Data.Implements.RolData;
-using Data.Implements.RolUserData;
-using Data.Implements.UserDate;
-using Data.Implements.FormData;
-using Data.Implements.FormModuleData;
-using Data.Implements.RolFormPermissionData;
-using Data.Implements.ModulePermissionData;
+using Data.Interfaces.Security;
+using Data.Implements;
+
+//business
 using Business.Interfaces;
 using Business.Implements;
+
+
+//utilities
 using Utilities.Interfaces;
 using Utilities.Helpers;
 using Utilities.Mail;
 using Utilities.Jwt;
+
+//web
 using Web.ServiceExtension;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Business.Services;
-using Data.Implements.BaseDate;
-using Data.Implements.BaseData;
+using System.Text.Json;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add controllers
+// Add controllers with FluentValidation
 builder.Services.AddControllers();
-
-builder.Services.AddValidatorsFromAssemblyContaining(typeof(Program));
-builder.Services.AddSingleton<IValidatorFactory>(sp =>
-    new ServiceProviderValidatorFactory(sp));
+builder.Services.AddFluentValidationAutoValidation()
+    .AddFluentValidationClientsideAdapters()
+    .AddValidatorsFromAssemblyContaining(typeof(Program));
 
 // Add Swagger documentation using extension method
 builder.Services.AddSwaggerDocumentation();
@@ -56,13 +55,16 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
 
-// Configure JWT
+// Configure JWT and Authentication Services
 builder.Services.AddScoped<IJwtGenerator, GenerateTokenJwt>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
-// Register generic repositories and business logic
+// Register global app settings
+var appSettingsSection = builder.Configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appSettingsSection);
 
-
-// Existing code remains unchanged
+// Register generic repositories and business logic services
 builder.Services.AddScoped(typeof(IBaseModelData<>), typeof(BaseModelData<>));
 
 builder.Services.AddScoped(typeof(IBaseBusiness<,>), typeof(BaseBusiness<,>));
@@ -75,6 +77,7 @@ builder.Services.AddScoped<IUserBusiness, UserBusiness>();
 builder.Services.AddScoped<IRolData, RolData>();
 builder.Services.AddScoped<IRolBusiness, RolBusiness>();
 
+// Register Authentication services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -99,6 +102,41 @@ builder.Services.AddScoped<IRolFormPermissionBusiness, RolFormPermissionBusiness
 builder.Services.AddScoped<IModulePermissionData, ModulePermissionData>();
 builder.Services.AddScoped<IModulePermissionBusiness, ModulePermissionBusiness>();
 
+// Register Module services
+builder.Services.AddScoped<IModuleData, ModuleData>();
+builder.Services.AddScoped<IModuleBusiness, ModuleBusiness>();
+
+// Register Permission services
+builder.Services.AddScoped<IPermissionData, PermissionData>();
+builder.Services.AddScoped<IPermissionBusiness, PermissionBusiness>();
+
+// Register Person services
+builder.Services.AddScoped<IPersonData, PersonData>();
+builder.Services.AddScoped<IPersonBusiness, PersonBusiness>();
+
+// Register Location services
+builder.Services.AddScoped<ICountryData, CountryData>();
+builder.Services.AddScoped<ICountryBusiness, CountryBusiness>();
+
+builder.Services.AddScoped<IDepartmentData, DepartmentData>();
+builder.Services.AddScoped<IDepartmentBusiness, DepartmentBusiness>();
+
+builder.Services.AddScoped<ICityData, CityData>();
+builder.Services.AddScoped<ICityBusiness, CityBusiness>();
+
+builder.Services.AddScoped<IDistrictData, DistrictData>();
+builder.Services.AddScoped<IDistrictBusiness, DistrictBusiness>();
+
+// Register Person-related services
+builder.Services.AddScoped<IClientData, ClientData>();
+builder.Services.AddScoped<IClientBusiness, ClientBusiness>();
+
+builder.Services.AddScoped<IEmployeeData, EmployeeData>();
+builder.Services.AddScoped<IEmployeeBusiness, EmployeeBusiness>();
+
+builder.Services.AddScoped<IProviderData, ProviderData>();
+builder.Services.AddScoped<IProviderBusiness, ProviderBusiness>();
+
 // Register utility helpers
 builder.Services.AddScoped<IGenericIHelpers, GenericHelpers>();
 builder.Services.AddScoped<IDatetimeHelper, DatetimeHelper>();
@@ -116,7 +154,12 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    var key = Encoding.ASCII.GetBytes(builder.Configuration["JWT:Key"] ?? throw new InvalidOperationException("JWT:Key is not configured"));
+    // Primero intentamos usar la configuración desde AppSettings
+    var jwtKey = builder.Configuration["AppSettings:JwtSecretKey"] ?? 
+                 builder.Configuration["JWT:Key"] ?? 
+                 throw new InvalidOperationException("JWT key is not configured");
+    
+    var key = Encoding.UTF8.GetBytes(jwtKey);
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
@@ -125,6 +168,16 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
+    };    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                context.Response.Headers.Append("Token-Expired", "true");
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -152,9 +205,7 @@ var origenesPermitidos = builder.Configuration.GetValue<string>("origenesPermiti
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Sistema de Gestión v1");
             c.RoutePrefix = string.Empty; // Para servir Swagger UI en la raíz
         });
-    }
-
-    // Use custom exception handling middleware
+    }    // Use custom exception handling middleware
     app.UseExceptionHandler(appError =>
     {
         appError.Run(async context =>
@@ -162,11 +213,13 @@ var origenesPermitidos = builder.Configuration.GetValue<string>("origenesPermiti
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
 
-            await context.Response.WriteAsync(new
+            var errorJson = System.Text.Json.JsonSerializer.Serialize(new
             {
                 StatusCode = context.Response.StatusCode,
                 Message = "Error interno del servidor."
-            }.ToString());
+            });
+            
+            await context.Response.WriteAsync(errorJson);
         });
     });
 

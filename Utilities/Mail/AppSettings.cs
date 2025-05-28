@@ -10,6 +10,7 @@ namespace Utilities.Mail
     {
         public string ResetPasswordBaseUrl { get; set; }
         public string FrontendUrl { get; set; } // ejemplo adicional
+        public object AppUrl { get; set; }
     }
 }
 

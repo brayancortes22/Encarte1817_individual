@@ -24,18 +24,13 @@ namespace Utilities.Jwt
         public GenerateTokenJwt(IConfiguration configuration)
         {
             _configuration = configuration;
-        }
-
-        /// <summary>
+        }        /// <summary>
         /// Genera un token JWT basado en la información del usuario.
         /// </summary>
         /// <param name="data">Instancia del modelo User con la información del usuario autenticado.</param>
         /// <returns>Un objeto AuthDto que contiene el token y la fecha de expiración.</returns>
-        public async Task<AuthDto> GeneradorToken(User data)
+        public Task<AuthDto> GeneradorToken(User data)
         {
-
-
-
             // 1. Claims (datos incluidos en el token)
             // En este caso solo el ID del usuario para evitar exposición de datos sensibles
             var claims = new List<Claim>
@@ -69,20 +64,16 @@ namespace Utilities.Jwt
                 claims: claims,             // Los datos incluidos
                 expires: expiracion,        // Fecha de expiración
                 signingCredentials: creds   // Firma
-            );
-
-
-
-            // 5. Serializar el token
+            );            // 5. Serializar el token
             var token = new JwtSecurityTokenHandler().WriteToken(tokenSeguridad);
 
 
-            // 6. Retornar DTO con token y expiración
-            return new AuthDto
+            // 6. Retornar DTO con token y expiración como Task completado
+            return Task.FromResult(new AuthDto
             {
                 Token = token,
                 Expiracion = expiracion
-            };
+            });
         }
 
         /// <summary>
@@ -153,6 +144,42 @@ namespace Utilities.Jwt
             {
                 return null; // Si es inválido o ha expirado, se retorna null
             }
+        }        /// <summary>
+        /// Genera un token JWT específico para restablecer contraseña con tiempo de expiración corto.
+        /// </summary>
+        /// <param name="user">Usuario que solicita restablecer su contraseña</param>
+        /// <returns>Token JWT con tiempo de expiración corto</returns>
+        public string GeneratePasswordResetToken(User user)
+        {
+            // Se definen los claims específicos para el token de restablecimiento de contraseña
+            var claims = new List<Claim>
+            {
+                new Claim("id", user.Id.ToString()),       // ID del usuario
+                new Claim("email", user.Email),            // Email para identificación
+                new Claim("tipo", "password_reset"),       // Tipo específico de token
+                new Claim("timestamp", DateTime.UtcNow.Ticks.ToString())  // Timestamp único para evitar reutilización
+            };
+
+            // Se obtiene la clave secreta desde la configuración
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:key"]!));
+
+            // Se generan credenciales con algoritmo seguro HMAC-SHA256
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            // Tiempo de expiración corto: 30 minutos (más seguro para restablecimiento de contraseña)
+            var expiracion = DateTime.UtcNow.AddMinutes(30);
+
+            // Construcción del token JWT
+            var tokenSeguridad = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
+                claims: claims,
+                expires: expiracion,
+                signingCredentials: creds
+            );
+
+            // Se convierte el token a una cadena y se devuelve
+            return new JwtSecurityTokenHandler().WriteToken(tokenSeguridad);
         }
     }
 }

@@ -9,56 +9,75 @@ using Entity.Dtos.AuthDTO;
 using Entity.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+using Utilities;
 using Utilities.Interfaces;
 
 namespace Business.Services
 {
     /// <summary>
-    /// Implementación del servicio JWT para la capa de negocio.
+    /// Implementaciï¿½n del servicio JWT para la capa de negocio.
     /// </summary>
     public class JwtService : IJwtService
     {
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IConfiguration _configuration;
+        private readonly AppSettings _appSettings;
 
         /// <summary>
         /// Constructor del servicio JWT.
         /// </summary>
         /// <param name="jwtGenerator">Generador de tokens de la capa de utilidades</param>
-        /// <param name="configuration">Configuración de la aplicación</param>
-        public JwtService(IJwtGenerator jwtGenerator, IConfiguration configuration)
+        /// <param name="configuration">Configuraciï¿½n de la aplicaciï¿½n</param>
+        /// <param name="appSettings">Configuraciones generales de la aplicaciï¿½n</param>
+        public JwtService(
+            IJwtGenerator jwtGenerator, 
+            IConfiguration configuration,
+            IOptions<AppSettings> appSettings)
         {
             _jwtGenerator = jwtGenerator;
             _configuration = configuration;
+            _appSettings = appSettings.Value;
         }
 
         /// <summary>
         /// Genera un token JWT delegando a la capa de utilidades.
         /// </summary>
         /// <param name="user">Usuario para el cual generar el token</param>
-        /// <returns>DTO con el token y su fecha de expiración</returns>
+        /// <returns>DTO con el token y su fecha de expiraciï¿½n</returns>
         public async Task<AuthDto> GenerateTokenAsync(User user)
         {
-            // Delegamos la generación a la capa de utilidades
+            // Delegamos la generaciï¿½n a la capa de utilidades
             return await _jwtGenerator.GeneradorToken(user);
+        }
+        
+        /// <summary>
+        /// Genera un token JWT especï¿½fico para restablecer contraseï¿½a.
+        /// </summary>
+        /// <param name="user">Usuario que solicita restablecer su contraseï¿½a</param>
+        /// <returns>Token JWT con tiempo de expiraciï¿½n corto</returns>
+        public string GeneratePasswordResetToken(User user)
+        {
+            // Usamos la implementaciï¿½n subyacente en la capa de utilidades
+            return _jwtGenerator.GeneratePasswordResetToken(user);
         }
 
         /// <summary>
         /// Valida un token JWT y extrae sus claims.
         /// </summary>
         /// <param name="token">Token JWT a validar</param>
-        /// <returns>ClaimsPrincipal con la información del token, o null si es inválido</returns>
+        /// <returns>ClaimsPrincipal con la informaciï¿½n del token, o null si es invï¿½lido</returns>
         public ClaimsPrincipal ValidateToken(string token)
         {
             if (string.IsNullOrEmpty(token))
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["JWT:key"]);
+            var key = Encoding.ASCII.GetBytes(_appSettings.JwtSecretKey);
 
             try
             {
-                // Configurar los parámetros de validación
+                // Configurar los parï¿½metros de validaciï¿½n
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -82,16 +101,16 @@ namespace Business.Services
             }
             catch
             {
-                // Si hay alguna excepción durante la validación, consideramos el token inválido
+                // Si hay alguna excepciï¿½n durante la validaciï¿½n, consideramos el token invï¿½lido
                 return null;
             }
         }
 
         /// <summary>
-        /// Verifica si un token es válido sin extraer sus claims.
+        /// Verifica si un token es vï¿½lido sin extraer sus claims.
         /// </summary>
         /// <param name="token">Token JWT a verificar</param>
-        /// <returns>True si el token es válido; false en caso contrario</returns>
+        /// <returns>True si el token es vï¿½lido; false en caso contrario</returns>
         public bool IsTokenValid(string token)
         {
             return ValidateToken(token) != null;
