@@ -29,14 +29,6 @@ namespace Data.Implements.BaseData
             return await _dbSet.Where(e => e.Status == true).ToListAsync();
         }
 
-        /// <summary>
-        /// Obtiene todos los registros (activos e inactivos)
-        /// </summary>
-        /// <returns>Lista completa de entidades</returns>
-        public override async Task<List<T>> GetAllWithInactiveAsync()
-        {
-            return await _dbSet.ToListAsync();
-        }
 
         /// <summary>
         /// Obtiene una entidad por su ID
@@ -126,26 +118,6 @@ namespace Data.Implements.BaseData
             entity.Status = false;
             await _context.SaveChangesAsync();
             return true;
-        }
-
-        /// <summary>
-        /// Busca entidades que cumplan con una condición específica
-        /// </summary>
-        /// <param name="predicate">Expresión lambda que define la condición de búsqueda</param>
-        /// <returns>Lista de entidades que cumplen la condición</returns>
-        public override async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dbSet.Where(predicate).ToListAsync();
-        }
-
-        /// <summary>
-        /// Verifica si existe alguna entidad que cumpla con la condición especificada
-        /// </summary>
-        /// <param name="predicate">Expresión lambda que define la condición</param>
-        /// <returns>True si existe al menos una entidad que cumple la condición</returns>
-        public override async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dbSet.AnyAsync(predicate);
         }
     }
 }

@@ -28,13 +28,7 @@ namespace Data.Interfaces
         /// </summary>
         /// <returns>Lista de entidades activas</returns>
         Task<List<T>> GetAllAsync();
-
-        /// <summary>
-        /// Método para obtener todas las entidades (activas e inactivas)
-        /// </summary>
-        /// <returns>Lista completa de entidades</returns>
-        Task<List<T>> GetAllWithInactiveAsync();
-
+        
         /// <summary>
         /// Crea una nueva entidad
         /// </summary>
@@ -70,19 +64,6 @@ namespace Data.Interfaces
         /// <param name="id">ID de la entidad a desactivar</param>
         /// <returns>True si se desactivó correctamente</returns>
         Task<bool> SoftDeleteAsync(int id);
-
-        /// <summary>
-        /// Busca entidades que cumplan con una condición específica
-        /// </summary>
-        /// <param name="predicate">Expresión lambda para la condición</param>
-        /// <returns>Lista de entidades que cumplen la condición</returns>
-        Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
-
-        /// <summary>
-        /// Verifica si existe alguna entidad que cumpla con la condición especificada
-        /// </summary>
-        /// <param name="predicate">Expresión lambda para la condición</param>
-        /// <returns>True si existe al menos una entidad que cumple la condición</returns>
-        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
+      
     }
 }

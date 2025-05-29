@@ -9,6 +9,6 @@ namespace Data.Interfaces
 {
     public interface IRolUserData : IBaseModelData<RolUser>
     {
-        Task<bool> UpdatePartial(RolUser rolUser);
+
     }
 }

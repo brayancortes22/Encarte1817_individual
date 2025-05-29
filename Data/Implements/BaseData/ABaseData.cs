@@ -34,12 +34,7 @@ namespace Data.Implements.BaseDate
         public abstract Task<T> CreateAsync(T entity);
         public abstract Task<T> UpdateAsync(T entity);
         public abstract Task<bool> DeleteAsync(int id);
-        
-        // Nuevos métodos abstractos
-        public abstract Task<List<T>> GetAllWithInactiveAsync();
         public abstract Task<T?> UpdatePartialAsync(int id, Dictionary<string, object> propertyValues);
         public abstract Task<bool> SoftDeleteAsync(int id);
-        public abstract Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate);
-        public abstract Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
     }
 }
