@@ -1,5 +1,5 @@
 using AutoMapper;
-using Entity.Dtos.OtherDatesPerson.Country;
+using Entity.Dtos;
 using Entity.Model;
 
 namespace Utilities.Mappers.Profiles.OtherDatesPerson
@@ -14,11 +14,10 @@ namespace Utilities.Mappers.Profiles.OtherDatesPerson
             // Mapeo de Country a CountryDto y viceversa
             CreateMap<Country, CountryDto>().ReverseMap();
             
-            // Mapeo para actualización
-            CreateMap<UpdateCountryDto, Country>();
-            
-            // Mapeo para eliminación lógica
-            CreateMap<DeleteLogicalCountryDto, Country>();
+            // Aquí puedes agregar mapeos adicionales si los necesitas
+            // Por ejemplo:
+            // CreateMap<CountryCreateDto, Country>();
+            // CreateMap<CountryUpdateDto, Country>();
         }
     }
 }

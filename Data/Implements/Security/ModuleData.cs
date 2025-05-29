@@ -8,7 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-   
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades Module (módulo)
+    /// </summary>
+    public class ModuleData : BaseModelData<Module>, IModuleData
+    {
+        public ModuleData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para Module si es necesario
+    }
 }

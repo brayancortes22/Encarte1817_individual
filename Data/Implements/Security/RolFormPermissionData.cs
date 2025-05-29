@@ -8,7 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-   
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades RolFormPermission (permisos de formularios por rol)
+    /// </summary>
+    public class RolFormPermissionData : BaseModelData<RolFormPermission>, IRolFormPermissionData
+    {
+        public RolFormPermissionData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para RolFormPermission si es necesario
+    }
 }

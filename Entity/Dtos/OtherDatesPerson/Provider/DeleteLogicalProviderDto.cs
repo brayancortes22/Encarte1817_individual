@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Dtos.OtherDatesPerson.Provider
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para la eliminación lógica de un proveedor (operación DELETE lógico)

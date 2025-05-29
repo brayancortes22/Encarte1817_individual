@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Business.Interfaces
 {
-  
+    public interface IModuleBusiness : IBaseBusiness<Module, ModuleDto>
+    {
+        // Métodos específicos para Module (si son necesarios)
+    }
 }

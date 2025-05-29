@@ -8,7 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades Form (formulario)
+    /// </summary>
+    public class FormData : BaseModelData<Form>, IFormData
+    {
+        public FormData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para Form si es necesario
+    }
 }

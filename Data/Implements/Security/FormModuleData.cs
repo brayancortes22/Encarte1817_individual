@@ -8,7 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-   
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades FormModule (relación formulario-módulo)
+    /// </summary>
+    public class FormModuleData : BaseModelData<FormModule>, IFormModuleData
+    {
+        public FormModuleData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para FormModule si es necesario
+    }
 }

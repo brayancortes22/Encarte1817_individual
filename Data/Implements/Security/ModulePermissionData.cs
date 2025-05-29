@@ -8,7 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-   
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades ModulePermission (permisos por módulo)
+    /// </summary>
+    public class ModulePermissionData : BaseModelData<ModulePermission>, IModulePermissionData
+    {
+        public ModulePermissionData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para ModulePermission si es necesario
+    }
 }

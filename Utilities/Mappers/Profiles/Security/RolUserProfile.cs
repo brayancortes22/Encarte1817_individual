@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Entity.Dtos.RolUserDTO;
+using Entity.Dtos;
 using Entity.Model;
 using System;
 using System.Collections.Generic;

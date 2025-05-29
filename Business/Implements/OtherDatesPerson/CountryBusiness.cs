@@ -11,8 +11,7 @@ using Utilities.Exceptions;
 using Utilities.Interfaces;
 
 namespace Business.Implements
-{
-    /// <summary>
+{    /// <summary>
     /// Implementa la lógica de negocio para la gestión de países.
     /// </summary>
     public class CountryBusiness : BaseBusiness<Country, CountryDto>, ICountryBusiness
@@ -23,13 +22,13 @@ namespace Business.Implements
         /// Constructor de la clase CountryBusiness.
         /// </summary>
         public CountryBusiness(
-            ICountryData countryData,
+            ICountryData data,
             IMapper mapper,
             ILogger<CountryBusiness> logger,
             IGenericIHelpers helpers)
-            : base(countryData, mapper, logger, helpers)
+            : base(data, mapper, logger, helpers)
         {
-            _countryData = countryData;
+            _countryData = data;
         }
 
         

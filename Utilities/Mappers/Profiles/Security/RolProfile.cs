@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Entity.Model;
-using Entity.Dtos.RolDTO;
+using Entity.Dtos;
 
 namespace Utilities.Mappers.Profiles.Security
 {

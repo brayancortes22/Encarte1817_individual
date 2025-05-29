@@ -1,5 +1,5 @@
 using AutoMapper;
-using Entity.Dtos.Security.ChangeLog;
+using Entity.Dtos;
 using Entity.Model;
 
 namespace Utilities.Mappers.Profiles

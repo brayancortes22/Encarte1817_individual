@@ -10,6 +10,15 @@ using System.Threading.Tasks;
 
 namespace Data.Implements
 {
-    
-    
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades District
+    /// </summary>
+    public class DistrictData : BaseModelData<District>, IDistrictData
+    {
+        public DistrictData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para District si es necesario
+    }
 }

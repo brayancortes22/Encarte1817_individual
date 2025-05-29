@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Business.Interfaces
 {
-
+    public interface IFormBusiness : IBaseBusiness<Form, FormDto>
+    {
+        // Métodos específicos para Form (si son necesarios)
+    }
 }

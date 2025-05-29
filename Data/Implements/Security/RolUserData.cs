@@ -1,5 +1,5 @@
 ﻿using Data.Implements.BaseData;
-using Data.Interfaces; // Añade esta línea
+using Data.Interfaces;
 using Entity.Context;
 using Entity.Model;
 using System;
@@ -8,7 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades RolUser (relación rol-usuario)
+    /// </summary>
+    public class RolUserData : BaseModelData<RolUser>, IRolUserData
+    {
+        public RolUserData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para RolUser si es necesario
+    }
 }

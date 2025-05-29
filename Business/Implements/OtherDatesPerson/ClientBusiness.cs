@@ -23,13 +23,13 @@ namespace Business.Implements
         /// Constructor de la clase ClientBusiness.
         /// </summary>
         public ClientBusiness(
-            IClientData clientData,
+            IClientData data,
             IMapper mapper,
             ILogger<ClientBusiness> logger,
             IGenericIHelpers helpers)
-            : base(clientData, mapper, logger, helpers)
+            : base(data, mapper, logger, helpers)
         {
-            _clientData = clientData;
+            _clientData = data;
         }
 
         

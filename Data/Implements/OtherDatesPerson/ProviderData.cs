@@ -10,6 +10,15 @@ using System.Threading.Tasks;
 
 namespace Data.Implements
 {
-
-      
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades Provider
+    /// </summary>
+    public class ProviderData : BaseModelData<Provider>, IProviderData
+    {
+        public ProviderData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para Provider si es necesario
+    }
 }

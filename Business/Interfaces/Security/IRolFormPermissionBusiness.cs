@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Business.Interfaces
 {
-    
+    public interface IRolFormPermissionBusiness : IBaseBusiness<RolFormPermission, RolFormPermissionDto>
+    {
+        // Métodos específicos para RolFormPermission (si son necesarios)
+    }
 }

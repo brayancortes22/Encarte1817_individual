@@ -37,14 +37,15 @@ namespace Business.Interfaces
         /// </summary>
         /// <param name="dto">Objeto de transferencia con los datos actualizados</param>
         /// <returns>El DTO actualizado o una excepción si falla</returns>
-        Task<D> UpdateAsync(D dto);
-
+        Task<D> UpdateAsync(D dto);       
+        
         /// <summary>
-        /// Actualiza parcialmente un registro existente a partir de un DTO
+        /// Actualiza parcialmente un registro existente
         /// </summary>
-        /// <param name="dto">Objeto de transferencia con los datos actualizados</param>
-        /// <returns>El DTO actualizado o una excepción si falla</returns>
-        Task<D> UpdatePartialAsync(D dto);
+        /// <param name="id">ID del registro a actualizar</param>
+        /// <param name="propertyValues">Diccionario con las propiedades a actualizar</param>
+        /// <returns>El DTO actualizado o null si no se encuentra</returns>
+        Task<D?> UpdatePartialAsync(int id, Dictionary<string, object> propertyValues);
 
 
         /// <summary>

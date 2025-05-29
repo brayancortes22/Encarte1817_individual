@@ -8,7 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-   
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades Rol (rol)
+    /// </summary>
+    public class RolData : BaseModelData<Rol>, IRolData
+    {
+        public RolData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para Rol si es necesario
+    }
 }

@@ -21,15 +21,15 @@ namespace Business.Implements
 
         /// <summary>
         /// Constructor de la clase DepartmentBusiness.
-        /// </summary>
+        /// </summary>        
         public DepartmentBusiness(
-            IDepartmentData departmentData,
+            IDepartmentData data,
             IMapper mapper,
             ILogger<DepartmentBusiness> logger,
             IGenericIHelpers helpers)
-            : base(departmentData, mapper, logger, helpers)
+            : base(data, mapper, logger, helpers)
         {
-            _departmentData = departmentData;
+            _departmentData = data;
         }
 
       

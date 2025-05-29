@@ -8,7 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements
+namespace Data.Implements.Security
 {
-    
+    /// <summary>
+    /// Implementación de operaciones de datos para entidades Permission (permisos)
+    /// </summary>
+    public class PermissionData : BaseModelData<Permission>, IPermissionData
+    {
+        public PermissionData(ApplicationDbContext context) : base(context)
+        {
+        }
+        
+        // Aquí puedes agregar métodos específicos para Permission si es necesario
+    }
 }

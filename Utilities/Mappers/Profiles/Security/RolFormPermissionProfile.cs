@@ -1,5 +1,5 @@
 using AutoMapper;
-using Entity.Dtos.Security.RolFormPermission;
+using Entity.Dtos;
 using Entity.Model;
 
 namespace Utilities.Mappers.Profiles.Security

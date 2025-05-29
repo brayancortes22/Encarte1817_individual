@@ -1,5 +1,5 @@
 using AutoMapper;
-using Entity.Dtos.OtherDatesPerson.District;
+using Entity.Dtos;
 using Entity.Model;
 
 namespace Utilities.Mappers.Profiles.OtherDatesPerson

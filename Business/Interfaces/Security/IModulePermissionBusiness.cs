@@ -6,5 +6,8 @@ using System.Threading.Tasks;
 
 namespace Business.Interfaces
 {
-    
+    public interface IModulePermissionBusiness : IBaseBusiness<ModulePermission, ModulePermissionDto>
+    {
+        // Métodos específicos para ModulePermission (si son necesarios)
+    }
 }

@@ -9,6 +9,8 @@ namespace Data.Interfaces.Security
 {
     public interface IUserData : IBaseModelData<User>
     {
-        
+        Task<User> GetByEmailAsync(string email);
+        Task<User> ValidateCredentialsAsync(string email, string password);
+        Task<User> GetUserWithDetailsAsync(int id);
     }
 }

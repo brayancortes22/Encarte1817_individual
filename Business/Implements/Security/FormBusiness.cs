@@ -32,6 +32,5 @@ namespace Business.Implements
             _formData = formData;
         }
 
-
     }
 }
