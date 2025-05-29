@@ -1,7 +1,7 @@
 using AutoMapper;
 using Business.Interfaces;
 using Data.Interfaces;
-using Entity.Dtos.Security.FormModule;
+using Entity.Dtos;
 using Entity.Model;
 using Microsoft.Extensions.Logging;
 using System;

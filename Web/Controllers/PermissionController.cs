@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Business.Interfaces.Security;
+using Business.Interfaces;
 using Entity.Dtos;
 using Entity.Model;
 using Microsoft.AspNetCore.Authorization;

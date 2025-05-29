@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Implements.Security
+namespace Data.Implements
 {
     /// <summary>
     /// Implementación de operaciones de datos para entidades RolUser (relación rol-usuario)

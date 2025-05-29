@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Data.Implements.Security
+namespace Data.Implements
 {
     /// <summary>
     /// Implementación de operaciones de datos para entidades ModulePermission (permisos por módulo)
