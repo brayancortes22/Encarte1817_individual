@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entity.Model;
 
-namespace Data.Interfaces.Security
+namespace Data.Interfaces
 {
     public interface IUserData : IBaseModelData<User>
     {

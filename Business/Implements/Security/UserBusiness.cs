@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Business.Interfaces;
-using Data.Interfaces.Security;
+using Data.Interfaces;
 using Entity.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

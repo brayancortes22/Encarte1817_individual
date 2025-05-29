@@ -11,9 +11,15 @@ namespace Utilities.Mappers.Profiles.Security
 {
     public class UserProfile : Profile
     {
-        public UserProfile() 
-        { 
+        public UserProfile()
+        {
+            CreateMap<User, AssignUserRolDto>().ReverseMap();
+            CreateMap<User, DeleteLogicalUserDto>().ReverseMap();
+            CreateMap<User, LoginRequestDto>().ReverseMap();
+            CreateMap<User, UpdatePasswordUserDto>().ReverseMap();
+            CreateMap<User, UpdateUserDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
+            
         }
     }
 }

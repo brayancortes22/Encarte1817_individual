@@ -1,5 +1,4 @@
 ﻿using Data.Interfaces;
-using Data.Interfaces.Security;
 using Data.Implements.BaseData;
 using Entity.Context;
 using Entity.Model;
