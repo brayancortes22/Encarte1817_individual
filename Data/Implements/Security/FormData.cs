@@ -36,12 +36,7 @@ namespace Data.Implements
                 .ToListAsync();
         }
 
-        public async Task<List<Form>> GetFormsByModuleAsync(int moduleId)
-        {
-            return await _context.Set<Form>()
-                .Where(f => f.Status == true && f.ModuleId == moduleId)
-                .ToListAsync();
-        }
+      
 
         public async Task<bool> UpdatePartial(Form form)
         {
@@ -62,8 +57,6 @@ namespace Data.Implements
             if (form.Order != 0)
                 existingForm.Order = form.Order;
                 
-            if (form.ModuleId != 0)
-                existingForm.ModuleId = form.ModuleId;
             
             _context.Set<Form>().Update(existingForm);
             await _context.SaveChangesAsync();

@@ -112,27 +112,7 @@ namespace Business.Implements
             }
         }
 
-        /// <summary>
-        /// Obtiene todos los registros (activos e inactivos) de la entidad desde el repositorio.
-        /// </summary>
-        /// <returns>
-        /// Una lista completa de DTOs que representan todas las entidades
-        /// </returns>
-        public override async Task<List<D>> GetAllWithInactiveAsync()
-        {
-            try
-            {
-                var entities = await _data.GetAllWithInactiveAsync();
-                _logger.LogInformation($"Obteniendo todos los registros (activos e inactivos) de {typeof(T).Name}");
-                return _mapper.Map<IList<D>>(entities).ToList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al obtener todos los registros de {typeof(T).Name}: {ex.Message}");
-                throw;
-            }
-        }
-
+       
         /// <summary>
         /// Obtiene una entidad específica por su identificador único.
         /// </summary>
@@ -260,45 +240,6 @@ namespace Business.Implements
             catch (Exception ex)
             {
                 _logger.LogError($"Error al eliminar lógicamente {typeof(T).Name} con ID {id}: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Busca entidades que cumplan con una condición específica
-        /// </summary>
-        /// <param name="predicate">Expresión lambda que define la condición de búsqueda</param>
-        /// <returns>Lista de DTOs que cumplen la condición</returns>
-        public override async Task<List<D>> FindAsync(Expression<Func<T, bool>> predicate)
-        {
-            try
-            {
-                var entities = await _data.FindAsync(predicate);
-                _logger.LogInformation($"Buscando {typeof(T).Name} que cumplen condición específica");
-                return _mapper.Map<IList<D>>(entities).ToList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al buscar {typeof(T).Name} por condición: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Verifica si existe alguna entidad que cumpla con la condición especificada
-        /// </summary>
-        /// <param name="predicate">Expresión lambda que define la condición</param>
-        /// <returns>True si existe al menos una entidad que cumple la condición</returns>
-        public override async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
-        {
-            try
-            {
-                _logger.LogInformation($"Verificando existencia de {typeof(T).Name} que cumple condición específica");
-                return await _data.ExistsAsync(predicate);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al verificar existencia de {typeof(T).Name}: {ex.Message}");
                 throw;
             }
         }

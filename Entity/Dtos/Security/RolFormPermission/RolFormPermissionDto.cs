@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.Security.RolFormPermission
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de la relación Rol-Form-Permission (operación GET ALL, CREATE)

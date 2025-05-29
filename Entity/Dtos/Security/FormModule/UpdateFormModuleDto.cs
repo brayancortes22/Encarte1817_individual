@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.Security.FormModule
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para actualizar información de la relación Form-Module (operación UPDATE)

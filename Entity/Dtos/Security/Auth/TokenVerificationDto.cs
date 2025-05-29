@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Entity.Dtos.AuthDTO
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para verificar la validez de un token

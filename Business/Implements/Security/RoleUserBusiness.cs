@@ -2,7 +2,7 @@
 using AutoMapper;
 using Business.Interfaces;
 using Data.Interfaces;
-using Entity.Dtos.RolUserDTO;
+using Entity.Dtos;
 using Entity.Model;
 using Microsoft.Extensions.Logging;
 using Utilities.Interfaces;
@@ -34,29 +34,6 @@ namespace Business.Implements
             _rolUserData = rolUserData;
         }
 
-        /// <summary>
-        /// Actualiza parcialmente un rol de usuario en la base de datos.
-        /// Solo actualiza los campos proporcionados en el DTO.
-        /// </summary>
-        /// <param name="dto">Objeto de transferencia con los datos a actualizar del rol de usuario.</param>
-        /// <returns>
-        /// True si la actualización fue exitosa; false en caso contrario.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// Se lanza cuando el ID del rol de usuario es inválido o cuando no se proporciona
-        /// ningún campo para actualizar.
-        /// </exception>
-        public async Task<bool> UpdateParcialRoleUserAsync(UpdateRolUserDto dto)
-        {
-            if (dto.Id <= 0)
-                throw new ArgumentException("ID inválido.");
-
-            if (dto.RolId <= 0 && dto.UserId <= 0)
-                throw new ArgumentException("Debe enviar al menos un campo para actualizar.");
-
-            var rolUser = _mapper.Map<RolUser>(dto);
-            var result = await _rolUserData.UpdatePartial(rolUser);
-            return result;
-        }
+        
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using Utilities.Interfaces;
-using Entity.Dtos.UserDTO;
+using Entity.Dtos;
 
 namespace Utilities.Helpers
 {

@@ -19,9 +19,8 @@ namespace Entity.Context
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options, 
+            DbContextOptions<ApplicationDbContext> options,
             IConfiguration configuration,
-           
             IHttpContextAccessor httpContextAccessor = null) : base(options)
         {
             _configuration = configuration;
@@ -177,7 +176,8 @@ namespace Entity.Context
         }
 
         /// <summary>
-        /// Guarda los cambios en la base de datos, asegurando la auditoría antes de persistir los datos.
+        /// Guarda los cambios en la base de datos, asegurando la
+        /// auditoría antes de persistir los datos.
         /// </summary>
         public override int SaveChanges()
         {
@@ -205,7 +205,8 @@ namespace Entity.Context
             
             foreach (var entry in ChangeTracker.Entries())
             {
-                if (entry.Entity is BaseEntity && entry.State != EntityState.Detached && entry.State != EntityState.Unchanged)
+                if (entry.Entity is BaseEntity && entry.State !=
+                    EntityState.Detached && entry.State != EntityState.Unchanged)
                 {
                     var auditEntry = new AuditEntry(entry);
                     auditEntry.TableName = entry.Metadata.GetTableName();

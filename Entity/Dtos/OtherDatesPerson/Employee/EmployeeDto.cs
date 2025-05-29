@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entity.Enums;
 
-namespace Entity.Dtos.OtherDatesPerson.Employee
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de un empleado (operación GET ALL, CREATE)

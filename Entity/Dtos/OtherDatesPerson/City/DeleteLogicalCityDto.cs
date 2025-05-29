@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.OtherDatesPerson.City
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para la eliminación lógica de una ciudad (operación DELETE lógico)

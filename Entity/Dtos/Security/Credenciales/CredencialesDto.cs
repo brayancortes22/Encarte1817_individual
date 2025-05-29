@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Entity.Dtos.Base;
 
 
-namespace Entity.Dtos.CredencialesDTO
+namespace Entity.Dtos
 {
     public class CredencialesDto : BaseDto
     {

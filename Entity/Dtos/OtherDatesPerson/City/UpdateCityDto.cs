@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.OtherDatesPerson.City
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para actualizar información de una ciudad (operación UPDATE)

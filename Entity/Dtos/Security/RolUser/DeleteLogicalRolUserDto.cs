@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.RolUserDTO
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para la creación de una nueva asignación de rol a usuario (operación DELETE Logical)

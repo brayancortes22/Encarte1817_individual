@@ -22,14 +22,6 @@ namespace Business.Implements
         public abstract Task<List<D>> GetAllAsync();
 
         /// <summary>
-        /// Obtiene una colección de todas las entidades (activas e inactivas).
-        /// </summary>
-        /// <returns>
-        /// Tarea asíncrona que representa la operación y contiene una colección completa de entidades.
-        /// </returns>
-        public abstract Task<List<D>> GetAllWithInactiveAsync();
-
-        /// <summary>
         /// Recupera una entidad específica por su identificador único.
         /// </summary>
         /// <param name="id">Identificador único de la entidad a recuperar.</param>
@@ -84,18 +76,5 @@ namespace Business.Implements
         /// <returns>True si se desactivó correctamente, False si no se encontró</returns>
         public abstract Task<bool> SoftDeleteAsync(int id);
 
-        /// <summary>
-        /// Busca entidades que cumplan con una condición específica
-        /// </summary>
-        /// <param name="predicate">Expresión que define la condición de búsqueda</param>
-        /// <returns>Lista de DTOs que cumplen la condición</returns>
-        public abstract Task<List<D>> FindAsync(Expression<Func<T, bool>> predicate);
-
-        /// <summary>
-        /// Verifica si existe alguna entidad que cumpla la condición especificada
-        /// </summary>
-        /// <param name="predicate">Expresión que define la condición</param>
-        /// <returns>True si existe al menos una entidad que cumple la condición</returns>
-        public abstract Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
     }
 }

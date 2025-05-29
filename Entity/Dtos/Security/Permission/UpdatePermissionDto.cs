@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 using Entity.Enums;
 
-namespace Entity.Dtos.Security.Permission
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para actualizar información de un permiso (operación UPDATE)

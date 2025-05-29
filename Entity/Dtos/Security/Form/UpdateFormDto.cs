@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.Security.Form
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para actualizar información de un formulario (operación UPDATE)

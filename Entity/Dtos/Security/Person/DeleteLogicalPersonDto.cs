@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.Security.Person
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para la eliminación lógica de una persona (operación DELETE lógico)

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 using Entity.Enums;
 
-namespace Entity.Dtos.Security.Permission
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de un permiso (operación GET ALL, CREATE)

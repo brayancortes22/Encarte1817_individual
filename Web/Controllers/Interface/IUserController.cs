@@ -1,4 +1,4 @@
-﻿using Entity.Dtos.UserDTO;
+﻿using Entity.Dtos;
 using Entity.Model;
 using Microsoft.AspNetCore.Mvc;
 

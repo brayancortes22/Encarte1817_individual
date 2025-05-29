@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Entity.Model;
-using Entity.Dtos.RolDTO;
+using Entity.Dtos;
 using Business.Interfaces;
 using Data.Interfaces;
 using Utilities.Exceptions;
@@ -28,36 +28,6 @@ namespace Business.Implements
       : base(rolData, mapper, logger, helpers)
         {
             _rolData = rolData;
-        }
-
-
-        ///<summary>
-        /// Actualiza parcialmente un rol en la base de datos
-        /// </summary>
-        public async Task<bool> UpdatePartialRolAsync(UpdateRolDto dto)
-        {
-            if (dto.Id <= 0)
-                throw new ArgumentException("ID inválido.");
-
-
-            var rol = _mapper.Map<Rol>(dto);
-
-            var result = await _rolData.UpdatePartial(rol); // esto ya retorna bool
-            return result;
-        }
-
-        ///<summary>
-        /// Desactiva un rol en la base de datos
-        /// </summary>
-        public async Task<bool> DeleteLogicRolAsync(DeleteLogiRolDto dto)
-        {
-            if (dto == null || dto.Id <= 0)
-                throw new ValidationException("Id", "El ID del rol es inválido");
-
-            var exists = await _rolData.GetByIdAsync(dto.Id)
-                ?? throw new EntityNotFoundException("rol", dto.Id);
-
-            return await _rolData.ActiveAsync(dto.Id, dto.Status);
         }
 
     }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.Security.Permission
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para la eliminación lógica de un permiso (operación DELETE lógico)

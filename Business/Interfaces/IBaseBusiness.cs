@@ -19,12 +19,6 @@ namespace Business.Interfaces
         Task<List<D>> GetAllAsync();
 
         /// <summary>
-        /// Obtiene todas las entidades (activas e inactivas) desde la base de datos
-        /// </summary>
-        /// <returns>Una colección completa de objetos de tipo <typeparamref name="D"/></returns>
-        Task<List<D>> GetAllWithInactiveAsync();
-
-        /// <summary>
         /// Obtiene un DTO específico por su ID
         /// </summary>
         /// <param name="id">Identificador único del DTO</param>
@@ -46,12 +40,12 @@ namespace Business.Interfaces
         Task<D> UpdateAsync(D dto);
 
         /// <summary>
-        /// Actualiza parcialmente un registro existente (solo los campos proporcionados)
+        /// Actualiza parcialmente un registro existente a partir de un DTO
         /// </summary>
-        /// <param name="id">Identificador del registro a actualizar</param>
-        /// <param name="propertyValues">Diccionario con los nombres de las propiedades y sus nuevos valores</param>
-        /// <returns>El DTO actualizado o null si no se encuentra</returns>
-        Task<D?> UpdatePartialAsync(int id, Dictionary<string, object> propertyValues);
+        /// <param name="dto">Objeto de transferencia con los datos actualizados</param>
+        /// <returns>El DTO actualizado o una excepción si falla</returns>
+        Task<D> UpdatePartialAsync(D dto);
+
 
         /// <summary>
         /// Elimina permanentemente un registro del sistema
@@ -67,18 +61,5 @@ namespace Business.Interfaces
         /// <returns>True si la operación fue exitosa; false en caso contrario</returns>
         Task<bool> SoftDeleteAsync(int id);
 
-        /// <summary>
-        /// Busca DTOs que cumplan con una condición específica
-        /// </summary>
-        /// <param name="predicate">Expresión que define la condición de búsqueda</param>
-        /// <returns>Lista de DTOs que cumplen la condición</returns>
-        Task<List<D>> FindAsync(Expression<Func<T, bool>> predicate);
-
-        /// <summary>
-        /// Verifica si existe algún registro que cumpla con la condición especificada
-        /// </summary>
-        /// <param name="predicate">Expresión que define la condición</param>
-        /// <returns>True si existe al menos un registro que cumple la condición</returns>
-        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
     }
 }

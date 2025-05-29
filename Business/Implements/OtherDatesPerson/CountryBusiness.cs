@@ -1,7 +1,7 @@
 using AutoMapper;
 using Business.Interfaces;
 using Data.Interfaces;
-using Entity.Dtos.OtherDatesPerson.Country;
+using Entity.Dtos;
 using Entity.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,48 +32,6 @@ namespace Business.Implements
             _countryData = countryData;
         }
 
-        /// <summary>
-        /// Realiza un borrado lógico de un país.
-        /// </summary>
-        public async Task<bool> DeleteLogicCountryAsync(DeleteLogicalCountryDto dto)
-        {
-            if (dto == null || dto.Id <= 0)
-                throw new ValidationException("Id", "El ID del país es inválido");
-
-            var exists = await _countryData.GetByIdAsync(dto.Id)
-                ?? throw new EntityNotFoundException("país", dto.Id);
-
-            return await _countryData.ActiveAsync(dto.Id, dto.Status);
-        }
-
-        /// <summary>
-        /// Obtiene todos los países activos.
-        /// </summary>
-        public async Task<List<CountryDto>> GetActiveCountriesAsync()
-        {
-            try
-            {
-                var entities = await _countryData.GetActiveCountriesAsync();
-                _logger.LogInformation("Obteniendo todos los países activos");
-                return _mapper.Map<List<CountryDto>>(entities);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al obtener los países activos: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Actualiza parcialmente un país.
-        /// </summary>
-        public async Task<bool> UpdatePartialCountryAsync(UpdateCountryDto dto)
-        {
-            if (dto == null || dto.Id <= 0)
-                throw new ArgumentException("ID inválido.");
-
-            var country = _mapper.Map<Country>(dto);
-            return await _countryData.UpdatePartial(country);
-        }
+        
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Dtos.OtherDatesPerson.Department
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de un departamento/estado (operación GET ALL, CREATE)

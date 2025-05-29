@@ -10,6 +10,5 @@ namespace Data.Interfaces
         Task<bool> ActiveAsync(int id, bool status);
         Task<bool> UpdatePartial(Form form);
         Task<List<Form>> GetActiveAsync();
-        Task<List<Form>> GetFormsByModuleAsync(int moduleId);
     }
 }

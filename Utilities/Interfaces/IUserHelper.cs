@@ -1,5 +1,5 @@
 ﻿using System;
-using Entity.Dtos.UserDTO;
+using Entity.Dtos;
 
 namespace Utilities.Interfaces
 {

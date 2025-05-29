@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Entity.Dtos.Base;
 
-namespace Entity.Dtos.UserDTO
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de un usuario (operación Delete permanente)

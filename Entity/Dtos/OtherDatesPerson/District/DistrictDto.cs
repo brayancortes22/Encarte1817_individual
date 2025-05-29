@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Dtos.OtherDatesPerson.District
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de un distrito (operación GET ALL, CREATE)

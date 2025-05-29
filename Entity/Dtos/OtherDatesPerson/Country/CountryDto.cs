@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Dtos.OtherDatesPerson.Country
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para mostrar información básica de un país (operación GET ALL, CREATE)

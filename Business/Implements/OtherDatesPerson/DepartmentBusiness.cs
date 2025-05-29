@@ -1,7 +1,7 @@
 using AutoMapper;
 using Business.Interfaces;
 using Data.Interfaces;
-using Entity.Dtos.OtherDatesPerson.Department;
+using Entity.Dtos;
 using Entity.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,69 +32,6 @@ namespace Business.Implements
             _departmentData = departmentData;
         }
 
-        /// <summary>
-        /// Realiza un borrado lógico de un departamento.
-        /// </summary>
-        public async Task<bool> DeleteLogicDepartmentAsync(DeleteLogicalDepartmentDto dto)
-        {
-            if (dto == null || dto.Id <= 0)
-                throw new ValidationException("Id", "El ID del departamento es inválido");
-
-            var exists = await _departmentData.GetByIdAsync(dto.Id)
-                ?? throw new EntityNotFoundException("departamento", dto.Id);
-
-            return await _departmentData.ActiveAsync(dto.Id, dto.Status);
-        }
-
-        /// <summary>
-        /// Obtiene todos los departamentos activos.
-        /// </summary>
-        public async Task<List<DepartmentDto>> GetActiveDepartmentsAsync()
-        {
-            try
-            {
-                var entities = await _departmentData.GetActiveAsync();
-                _logger.LogInformation("Obteniendo todos los departamentos activos");
-                return _mapper.Map<List<DepartmentDto>>(entities);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al obtener los departamentos activos: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Obtiene los departamentos de un país específico.
-        /// </summary>
-        public async Task<List<DepartmentDto>> GetDepartmentsByCountryAsync(int countryId)
-        {
-            if (countryId <= 0)
-                throw new ArgumentException("ID de país inválido");
-
-            try
-            {
-                var entities = await _departmentData.GetDepartmentsByCountryAsync(countryId);
-                _logger.LogInformation($"Obteniendo departamentos del país con ID: {countryId}");
-                return _mapper.Map<List<DepartmentDto>>(entities);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error al obtener departamentos del país ID {countryId}: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Actualiza parcialmente un departamento.
-        /// </summary>
-        public async Task<bool> UpdatePartialDepartmentAsync(UpdateDepartmentDto dto)
-        {
-            if (dto == null || dto.Id <= 0)
-                throw new ArgumentException("ID inválido.");
-
-            var department = _mapper.Map<Department>(dto);
-            return await _departmentData.UpdatePartial(department);
-        }
+      
     }
 }

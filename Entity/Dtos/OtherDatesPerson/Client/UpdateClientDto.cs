@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Dtos.OtherDatesPerson.Client
+namespace Entity.Dtos
 {
     /// <summary>
     /// DTO para actualizar información de un cliente (operación UPDATE)

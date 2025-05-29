@@ -1,16 +1,19 @@
-﻿using FluentValidation;
+﻿
 using System.Reflection;
+using FluentValidation; // Ensure this namespace is included
+using FluentValidation.AspNetCore; // Ensure this namespace is included
 
 namespace Web.ServiceExtension
 {
     public static class ApplicationServiceExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddApplicationServices(
+            this IServiceCollection services, IConfiguration configuration)
         {
-            // Registra validadores
+            // Registra validadores  
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-            // Configura CORS
+            // Configura CORS  
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigins", builder =>
@@ -21,7 +24,7 @@ namespace Web.ServiceExtension
                 });
             });
 
-            // Registra AutoMapper
+            // Registra AutoMapper  
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
