@@ -23,19 +23,19 @@ namespace Data.Implements
         // Por ejemplo, búsqueda por email
         public async Task<User> GetByEmailAsync(string email)
         {
-            return await _entities.FirstOrDefaultAsync(u => u.Email == email);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         // Verificación de credenciales
         public async Task<User> ValidateCredentialsAsync(string email, string password)
         {
-            return await _entities.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
         }
 
         // Obtener usuario con información de la persona y roles relacionados
         public async Task<User> GetUserWithDetailsAsync(int id)
         {
-            return await _entities
+            return await _dbSet
                 .Include(u => u.Person)
                 .Include(u => u.RolUsers)
                     .ThenInclude(ru => ru.Rol)

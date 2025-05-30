@@ -93,10 +93,9 @@ namespace Business.Implements
             if (user.Password != hashedPassword)
             {
                 throw new ValidationException("Credenciales incorrectas");
-            }
-
-            // Generar token JWT
-            return _jwtGenerator.GenerateToken(user);
+            }            // Generar token JWT
+            var authDto = await _jwtGenerator.GeneradorToken(user);
+            return authDto.Token;
         }
 
         /// <summary>
